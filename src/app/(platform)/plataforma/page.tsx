@@ -1,5 +1,6 @@
 import { HeroCarousel } from "@/components/platform/home/hero-carousel";
 import { ShowcaseRow } from "@/components/platform/home/showcase-row";
+import { ContinueSection } from "@/components/platform/home/continue-section";
 import {
   featuredItems,
   continueItems,
@@ -13,20 +14,12 @@ export default function PlataformaPage() {
     <div>
       <HeroCarousel items={featuredItems} />
 
-      <div className="-mt-14 space-y-4 pb-16">
-        {continueItems.length > 0 && (
-          <ShowcaseRow
-            title="Continue assistindo"
-            subtitle="Visto por último"
-            items={continueItems}
-            href="/biblioteca"
-            linkLabel="Minha biblioteca"
-          />
-        )}
+      <div className="-mt-14 space-y-12 pb-16">
+        {continueItems.length > 0 && <ContinueSection items={continueItems} />}
 
         <ShowcaseRow
-          title="Cursos em destaque"
-          subtitle="Uma seleção das melhores formações"
+          title="Explore outros cursos"
+          subtitle="Continue descobrindo as melhores formações"
           items={courseItems.filter((i) => i.featured).slice(0, 5)}
           href="/cursos"
           linkLabel="Conhecer mais cursos"

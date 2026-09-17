@@ -14,6 +14,8 @@ import {
 import { mentorItems } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import type { ContentItem } from "@/lib/types";
+import { Reveal } from "@/components/animations/reveal";
+import { Stagger } from "@/components/animations/stagger";
 
 const WHATSAPP_NUMBER = "5511999999999";
 const WHATSAPP_DISPLAY = "(11) 99999-9999";
@@ -80,7 +82,8 @@ const request = [
 export default function MentoriasPage() {
   return (
     <div className="mx-auto max-w-[1240px] px-5 pb-20 pt-28 sm:px-8 md:px-10">
-      <header className="max-w-3xl">
+      <Reveal>
+        <header className="max-w-3xl">
         <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-ink-soft">
           <span className="h-px w-8 bg-brand" />
           Acompanhamento individual
@@ -112,8 +115,9 @@ export default function MentoriasPage() {
           </a>
         </div>
       </header>
+      </Reveal>
 
-      <section className="mt-16 grid gap-4 md:grid-cols-3">
+      <Stagger direction="up" step={80} className="mt-16 grid gap-4 md:grid-cols-3">
         {values.map((v) => (
           <div key={v.title} className="rounded-lg border border-line-strong bg-panel p-6">
             <div className="grid h-11 w-11 place-items-center rounded-md bg-brand-soft text-brand-hover">
@@ -125,7 +129,7 @@ export default function MentoriasPage() {
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">{v.text}</p>
           </div>
         ))}
-      </section>
+      </Stagger>
 
       <section id="como-funciona" className="mt-20">
         <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-ink-soft">
@@ -136,7 +140,7 @@ export default function MentoriasPage() {
           Do primeiro contato ao acompanhamento
         </h2>
 
-        <div className="mt-8 border-t border-line-strong">
+        <Stagger direction="up" step={70} className="mt-8 border-t border-line-strong">
           {steps.map((step) => (
             <div
               key={step.number}
@@ -153,7 +157,7 @@ export default function MentoriasPage() {
               </p>
             </div>
           ))}
-        </div>
+        </Stagger>
       </section>
 
       <section className="mt-20 grid gap-10 lg:grid-cols-2">
@@ -179,7 +183,6 @@ export default function MentoriasPage() {
               </li>
             ))}
           </ul>
-
           <div className="mt-8 flex flex-col gap-3 rounded-lg border border-line-strong bg-panel p-5 sm:flex-row sm:items-center">
             <div className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-white/5 text-ink-soft">
               <Video size={20} />
@@ -209,7 +212,7 @@ export default function MentoriasPage() {
             materiais de apoio. Cada encontro é agendado de forma individual.
           </p>
 
-          <div className="mt-7 space-y-4">
+          <Stagger direction="up" step={70} className="mt-7 space-y-4">
             {mentorItems.map((m: ContentItem) => (
               <div
                 key={m.slug}
@@ -243,7 +246,7 @@ export default function MentoriasPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
@@ -256,7 +259,7 @@ export default function MentoriasPage() {
           Em quatro passos
         </h2>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Stagger direction="up" step={70} className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {request.map((item, i) => (
             <div key={item} className="flex gap-4 rounded-lg border border-line-strong bg-panel p-5">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-brand-soft font-display text-sm font-extrabold text-brand-hover">
@@ -265,7 +268,7 @@ export default function MentoriasPage() {
               <p className="text-sm leading-relaxed text-ink-soft">{item}</p>
             </div>
           ))}
-        </div>
+        </Stagger>
       </section>
 
       <section className="mt-20 overflow-hidden rounded-xl border border-line-strong bg-panel">

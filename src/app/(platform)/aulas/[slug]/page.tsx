@@ -1,125 +1,172 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { notFound } from "next/navigation";
-import { ArrowLeft, Play, CheckCircle2, Lock, Clock } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
+import { ArrowLeft, ChevronDown, ListVideo } from "lucide-react";
 import { findBySlug } from "@/lib/data";
-import { Cover } from "@/components/shared/cover";
+import {
+  flattenCurriculum,
+  initialLessonId,
+  seedCompletedIds,
+} from "@/lib/curriculum";
+import { LessonPlayer } from "@/components/platform/player/lesson-player";
+import { CourseSidebar } from "@/components/platform/player/course-sidebar";
 
 export default function CoursePlayerPage() {
   const { slug } = useParams<{ slug: string }>();
   const item = findBySlug(slug);
-  const [done, setDone] = useState<Record<string, boolean>>({});
 
-  if (!item || item.type !== "curso" || !item.curriculum) notFound();
+  const modules = useMemo(
+    () =>
+      item && item.type === "curso" && item.curriculum ? item.curriculum : [],
+    [item],
+  );
+  const progress = item && item.owned ? (item.progress ?? 0) : 0;
 
-  const totalLessons = item.curriculum.flatMap((m) => m.lessons).length;
-  const completed = item.curriculum.flatMap((m) => m.lessons).filter((l) => done[l.title]).length;
-  const percent = Math.round((completed / totalLessons) * 100);
+  const flat = useMemo(() => flattenCurriculum(modules), [modules]);
+  const seeded = useMemo(
+    () => seedCompletedIds(modules, progress),
+    [modules, progress],
+  );
+
+  const [done, setDone] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    seeded.forEach((id) => {
+      initial[id] = true;
+    });
+    return initial;
+  });
+  const [selectedId, setSelectedId] = useState<string>(() =>
+    flat.length ? initialLessonId(modules, progress) : "",
+  );
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  if (!item || item.type !== "curso") notFound();
+  if (!item.curriculum) redirect(`/item/${item.slug}`);
+  if (!item.owned) redirect(`/item/${item.slug}`);
+
+  const total = flat.length;
+  const completed = flat.filter((lesson) => done[lesson.id]).length;
+  const percent = total ? Math.round((completed / total) * 100) : 0;
+
+  const currentIndex = Math.max(
+    0,
+    flat.findIndex((lesson) => lesson.id === selectedId),
+  );
+  const current = flat[currentIndex] ?? null;
+
+  const handleSelect = (id: string) => setSelectedId(id);
+
+  const handleToggleDone = (id: string, advance = true) => {
+    const isAlreadyDone = Boolean(done[id]);
+    const next = { ...done, [id]: !isAlreadyDone };
+    setDone(next);
+
+    if (!isAlreadyDone && advance) {
+      const idx = flat.findIndex((lesson) => lesson.id === id);
+      const nextLesson = flat[idx + 1];
+      if (nextLesson) setSelectedId(nextLesson.id);
+    }
+  };
+
+  const goPrev = () => {
+    if (currentIndex > 0) {
+      setSelectedId(flat[currentIndex - 1].id);
+      setMobileOpen(false);
+    }
+  };
+
+  const goNext = () => {
+    if (currentIndex < total - 1) {
+      setSelectedId(flat[currentIndex + 1].id);
+      setMobileOpen(false);
+    }
+  };
+
+  const sidebarProps = {
+    item,
+    flat,
+    totalLessons: total,
+    completedCount: completed,
+    percent,
+    selectedId,
+    done,
+    onSelect: handleSelect,
+  };
 
   return (
-    <div className="mx-auto max-w-[1240px] px-5 pb-16 pt-28 sm:px-8 md:px-10">
-      <Link
-        href="/biblioteca"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-ink-soft transition hover:text-white"
-      >
-        <ArrowLeft size={16} />
-        Minha biblioteca
-      </Link>
+    <div className="mx-auto max-w-[1240px] px-5 pb-16 pt-24 sm:px-8 md:px-10">
+      <nav className="mb-6 flex flex-wrap items-center justify-between gap-3" aria-label="Navegação da aula">
+        <Link
+          href="/biblioteca"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-ink-soft transition hover:text-white"
+        >
+          <ArrowLeft size={16} />
+          Minha biblioteca
+        </Link>
+        <p className="truncate font-display text-sm font-bold text-white">
+          {item.title}
+        </p>
+      </nav>
 
-      <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr]">
-        <div>
-          <div className="relative aspect-video overflow-hidden rounded-lg bg-black shadow-pop ring-1 ring-white/10">
-            <Cover item={item} className="absolute inset-0 h-full w-full opacity-60" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-            <div className="absolute inset-0 grid place-items-center">
-              <button
-                type="button"
-                className="grid h-16 w-16 place-items-center rounded-full bg-white text-black shadow-brand transition hover:scale-105 hover:bg-brand-hover hover:text-white"
-                aria-label="Reproduzir vídeo"
-              >
-                <Play size={26} fill="currentColor" className="ml-1" />
-              </button>
-            </div>
-            <p className="absolute bottom-3 left-4 text-xs font-semibold text-ink-soft">
-              Player de vídeo · serviço de streaming externo
-            </p>
-          </div>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="min-w-0">
+          {current && (
+            <LessonPlayer
+              item={item}
+              lesson={current}
+              lessonNumber={currentIndex + 1}
+              totalLessons={total}
+              progress={percent}
+              completedCount={completed}
+              isCurrentDone={Boolean(done[current.id])}
+              onToggleDone={() => handleToggleDone(current.id, true)}
+              onPrev={goPrev}
+              onNext={goNext}
+              hasPrev={currentIndex > 0}
+              hasNext={currentIndex < total - 1}
+            />
+          )}
 
-          <h1 className="mt-6 font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-            {item.title}
-          </h1>
-          <p className="mt-2 text-sm text-ink-soft">{item.description}</p>
-
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <div className="flex h-1.5 w-48 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full bg-brand transition-all"
-                style={{ width: `${percent}%` }}
+          <section className="mt-6 lg:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-expanded={mobileOpen}
+              className="flex w-full items-center justify-between gap-3 rounded-lg border border-line-strong bg-panel px-4 py-3 text-sm font-bold text-white transition hover:border-brand-ring"
+            >
+              <span className="inline-flex items-center gap-2">
+                <ListVideo size={16} className="text-brand-hover" />
+                Conteúdo do curso
+              </span>
+              <ChevronDown
+                size={17}
+                className={`text-ink-soft transition-transform duration-300 ${
+                  mobileOpen ? "rotate-180" : ""
+                }`}
               />
-            </div>
-            <span className="text-xs font-semibold text-ink-soft">
-              {percent}% · {completed}/{totalLessons} aulas concluídas
-            </span>
-          </div>
+            </button>
 
-          <button
-            type="button"
-            onClick={() =>
-              setDone((prev) => ({ ...prev, current: true }))
-            }
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-hover"
-          >
-            <CheckCircle2 size={16} />
-            Marcar aula como concluída
-          </button>
+            <div
+              className={`grid transition-[grid-template-rows] duration-500 ease-out ${
+                mobileOpen ? "[grid-template-rows:1fr]" : "[grid-template-rows:0fr]"
+              }`}
+            >
+              <div className="min-h-0 overflow-hidden">
+                <div className="pt-4">
+                  <CourseSidebar {...sidebarProps} className="flex flex-col" />
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
-        <aside>
-          <h2 className="mb-4 font-display text-base font-bold text-white">
-            Conteúdo do curso
-          </h2>
-
-          <div className="space-y-4">
-            {item.curriculum.map((module) => (
-              <div key={module.title} className="rounded-lg border border-line-strong bg-card">
-                <p className="border-b border-line px-4 py-3 text-sm font-display font-bold text-white">
-                  {module.title}
-                </p>
-                <ul className="divide-y divide-line">
-                  {module.lessons.map((lesson) => {
-                    const isDone = done[lesson.title];
-                    return (
-                      <li
-                        key={lesson.title}
-                        className="flex items-center gap-3 px-4 py-3"
-                      >
-                        {isDone ? (
-                          <CheckCircle2 size={16} className="shrink-0 text-brand-hover" />
-                        ) : (
-                          <Play size={14} className="shrink-0 text-ink-soft" />
-                        )}
-
-                        <div className="min-w-0 flex-1">
-                          <p className={`truncate text-sm ${isDone ? "text-ink-faint line-through" : "text-ink-soft"}`}>
-                            {lesson.title}
-                          </p>
-                          <p className="mt-0.5 flex items-center gap-1 text-xs text-ink-faint">
-                            <Clock size={10} /> {lesson.duration}
-                          </p>
-                        </div>
-
-                        <Lock size={13} className="shrink-0 text-ink-faint/50" />
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </aside>
+        <CourseSidebar
+          {...sidebarProps}
+          className="hidden flex-col lg:sticky lg:top-24 lg:flex lg:max-h-[calc(100vh-7rem)] lg:self-start"
+        />
       </div>
     </div>
   );

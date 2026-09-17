@@ -1,3 +1,4 @@
+import { Image as ImageIcon } from "lucide-react";
 import type { ContentItem } from "@/lib/types";
 
 type CoverProps = {
@@ -5,6 +6,7 @@ type CoverProps = {
   className?: string;
   showType?: boolean;
   title?: boolean;
+  placeholderIndex?: number;
 };
 
 export function Cover({
@@ -12,6 +14,7 @@ export function Cover({
   className = "",
   showType = false,
   title = true,
+  placeholderIndex,
 }: CoverProps) {
   const initial = item.title.charAt(0).toUpperCase();
 
@@ -45,6 +48,20 @@ export function Cover({
         >
           {item.type}
         </span>
+      )}
+
+      {placeholderIndex !== undefined && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2.5"
+        >
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-black/30 text-white/75 ring-1 ring-white/15 backdrop-blur-sm">
+            <ImageIcon size={18} strokeWidth={1.75} />
+          </span>
+          <span className="rounded-full bg-black/35 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/85 backdrop-blur-sm">
+            imagem {placeholderIndex}
+          </span>
+        </div>
       )}
 
       {title && (

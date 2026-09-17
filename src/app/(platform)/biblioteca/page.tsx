@@ -1,19 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpen,
-  FileText,
-  MessagesSquare,
-  Play,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { ownedItems, continueItems } from "@/lib/data";
 import { ContentCard } from "@/components/platform/content/content-card";
-import { Cover } from "@/components/shared/cover";
-import { TypeBadge } from "@/components/platform/content/type-badge";
-
-const continueHref = (slug: string, type: string) =>
-  type === "curso" ? `/aulas/${slug}` : `/item/${slug}`;
+import { ContinueCard } from "@/components/platform/content/continue-card";
+import { Reveal } from "@/components/animations/reveal";
+import { Stagger } from "@/components/animations/stagger";
 
 export default function BibliotecaPage() {
   const grouped = {
@@ -30,33 +21,30 @@ export default function BibliotecaPage() {
     { type: "mentoria" as const, label: "Mentorias" },
   ];
 
-  const icons = {
-    curso: BookOpen,
-    pdf: FileText,
-    livro: BookOpen,
-    mentoria: MessagesSquare,
-  };
-
   const totalOwned = ownedItems.length;
 
   return (
     <div className="mx-auto max-w-[1240px] px-5 pb-20 pt-28 sm:px-8 md:px-10">
-      <header className="mb-12 md:mb-14">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight text-white">
-          Minha biblioteca
-        </h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          {totalOwned > 0
-            ? `${totalOwned} ${totalOwned === 1 ? "conteúdo adquirido" : "conteúdos adquiridos"} · sempre à mão.`
-            : "Seus conteúdos adquiridos, sempre à mão."}
-        </p>
-      </header>
+      <Reveal>
+        <header className="mb-12 md:mb-14">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-white">
+            Minha biblioteca
+          </h1>
+          <p className="mt-2 text-sm text-ink-soft">
+            {totalOwned > 0
+              ? `${totalOwned} ${totalOwned === 1 ? "conteúdo adquirido" : "conteúdos adquiridos"} · sempre à mão.`
+              : "Seus conteúdos adquiridos, sempre à mão."}
+          </p>
+        </header>
+      </Reveal>
 
       <section className="mb-16">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <h2 className="font-display text-lg font-bold text-white">Continue estudando</h2>
-          <span className="text-xs text-ink-faint">retomar de onde parou</span>
-        </div>
+        <Reveal>
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <h2 className="font-display text-lg font-bold text-white">Continue estudando</h2>
+            <span className="text-xs text-ink-faint">retomar de onde parou</span>
+          </div>
+        </Reveal>
 
         {continueItems.length === 0 ? (
           <div className="rounded-lg border border-dashed border-line-strong py-16 text-center">
@@ -64,94 +52,20 @@ export default function BibliotecaPage() {
             <p className="mt-1 text-sm text-ink-soft">Explore o catálogo e comece algo novo.</p>
           </div>
         ) : (
-          <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 py-2 sm:-mx-8 sm:px-8 md:-mx-10 md:px-10">
-            {continueItems.map((item) => {
-              const Icon = icons[item.type];
-              const progress = item.progress ?? 0;
-              const href = continueHref(item.slug, item.type);
-
-              return (
-                <Link
-                  key={item.slug}
-                  href={href}
-                  className="group grid w-72 shrink-0 snap-start grid-cols-[92px_1fr] overflow-hidden rounded-lg border border-line-strong bg-card transition duration-300 hover:-translate-y-0.5 hover:border-brand-ring hover:shadow-card sm:w-80 sm:grid-cols-[130px_1fr]"
-                >
-                  <div className="relative aspect-3/4 h-full w-full">
-                    {item.imageUrl ? (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.title}
-                        fill
-                        className="object-cover transition duration-300 group-hover:scale-[1.05]"
-                      />
-                    ) : (
-                      <Cover
-                        item={item}
-                        title={false}
-                        className="absolute inset-0 h-full w-full transition duration-300 group-hover:scale-[1.05]"
-                      />
-                    )}
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
-                    />
-                    <div
-                      aria-hidden="true"
-                      className="absolute inset-x-0 bottom-0 h-[3px] bg-white/10"
-                    >
-                      <div
-                        className="h-full bg-brand"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex min-w-0 flex-col p-4 sm:p-5">
-                    <div className="flex items-center justify-between gap-2">
-                      <TypeBadge item={item} />
-                      <span className="grid h-7 w-7 place-items-center rounded-md bg-white/5 text-ink-soft">
-                        <Icon size={13} />
-                      </span>
-                    </div>
-
-                    <h3 className="mt-3 line-clamp-2 font-display text-sm font-extrabold leading-snug text-white">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1.5 truncate text-xs text-ink-soft">
-                      {item.category}
-                      {item.teacher ? ` · ${item.teacher}` : ""}
-                    </p>
-
-                    <div className="mt-auto pt-4">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-brand-hover">{progress}% concluído</span>
-                        {item.type === "curso" && (
-                          <span className="text-ink-faint">
-                            {item.modules} módulos · {item.lessons} aulas
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-brand"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-white transition group-hover:text-brand-hover">
-                      <Play size={13} fill="currentColor" />
-                      Continuar estudando
-                      <ArrowRight
-                        size={13}
-                        className="text-brand-hover transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+          <Stagger
+            direction="x"
+            step={60}
+            className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 py-2 sm:-mx-8 sm:px-8 md:-mx-10 md:px-10"
+          >
+            {continueItems.map((item, index) => (
+              <ContinueCard
+                key={item.slug}
+                item={item}
+                index={index}
+                className="w-[min(100%,440px)]"
+              />
+            ))}
+          </Stagger>
         )}
       </section>
 
@@ -162,14 +76,25 @@ export default function BibliotecaPage() {
 
           return (
             <section key={section.type} className="mb-14">
-              <h2 className="mb-5 font-display text-lg font-bold text-white">
-                {section.label}
-              </h2>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-8 min-[420px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {list.map((item) => (
-                  <ContentCard key={item.slug} item={item} className="w-full" />
+              <Reveal>
+                <h2 className="mb-5 font-display text-lg font-bold text-white">
+                  {section.label}
+                </h2>
+              </Reveal>
+              <Stagger
+                direction="up"
+                step={55}
+                className="grid grid-cols-2 gap-x-4 gap-y-8 min-[420px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+              >
+                {list.map((item, index) => (
+                  <ContentCard
+                    key={item.slug}
+                    item={item}
+                    className="w-full"
+                    placeholderIndex={index + 1}
+                  />
                 ))}
-              </div>
+              </Stagger>
             </section>
           );
         })}

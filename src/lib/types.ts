@@ -2,9 +2,22 @@ export type ContentType = "curso" | "pdf" | "livro" | "mentoria";
 
 export type Level = "Iniciante" | "Intermediário" | "Avançado";
 
+export type Lesson = {
+  title: string;
+  duration: string;
+  description?: string;
+  free?: boolean;
+  materials?: string[];
+};
+
 export type Module = {
   title: string;
-  lessons: { title: string; duration: string }[];
+  lessons: Lesson[];
+};
+
+export type TocPart = {
+  title: string;
+  description?: string;
 };
 
 export type ContentItem = {
@@ -27,6 +40,8 @@ export type ContentItem = {
   owned?: boolean;
   progress?: number;
   curriculum?: Module[];
+  toc?: TocPart[];
+  format?: string;
   cover: { from: string; to: string };
   imageUrl?: string;
   accent: string;

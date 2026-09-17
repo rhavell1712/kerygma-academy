@@ -10,11 +10,13 @@ import { TypeBadge } from "./type-badge";
 type ContentCardProps = {
   item: ContentItem;
   className?: string;
+  placeholderIndex?: number;
 };
 
 export function ContentCard({
   item,
   className = "w-44 min-[420px]:w-48 md:w-52",
+  placeholderIndex,
 }: ContentCardProps) {
   let meta = "";
 
@@ -52,6 +54,7 @@ export function ContentCard({
           <Cover
             item={item}
             title={false}
+            placeholderIndex={placeholderIndex}
             className="absolute inset-0 h-full w-full transition duration-300 group-hover:scale-[1.06]"
           />
         )}
@@ -98,10 +101,13 @@ export function ContentCard({
         <div className="mt-3 flex justify-end">
           <Link
             href={`/item/${item.slug}`}
-            className="inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
+            className="group/cta inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
           >
-            Conhecer curso
-            <ArrowRight size={13} />
+            Ver detalhes
+            <ArrowRight
+              size={13}
+              className="transition-transform group-hover/cta:translate-x-0.5"
+            />
           </Link>
         </div>
       </div>

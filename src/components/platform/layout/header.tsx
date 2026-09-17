@@ -52,7 +52,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-[13px] font-semibold transition ${
+                  className={`nav-link text-[13px] font-semibold transition ${
                     active ? "text-white" : "text-ink-soft hover:text-white"
                   }`}
                 >
@@ -67,14 +67,14 @@ export function Header() {
           <Link
             href="/descobrir"
             aria-label="Buscar"
-            className="grid h-9 w-9 place-items-center rounded-md text-ink-soft transition hover:text-white"
+            className="grid h-9 w-9 place-items-center rounded-md text-ink-soft transition hover:text-white hover:scale-105 active:scale-95"
           >
             <Search size={18} />
           </Link>
 
           <Link
             href="/biblioteca"
-            className="hidden items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 text-[13px] font-semibold text-ink-soft transition hover:border-white/30 hover:text-white sm:flex"
+            className="hidden items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 text-[13px] font-semibold text-ink-soft transition hover:border-white/30 hover:text-white active:scale-95 sm:flex"
           >
             <User size={14} />
             Minha biblioteca
