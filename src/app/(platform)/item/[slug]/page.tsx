@@ -5,12 +5,10 @@ import { findBySlug, items } from "@/lib/data";
 import { seedCompletedIds } from "@/lib/curriculum";
 import { TypeBadge } from "@/components/platform/content/type-badge";
 import { Cover } from "@/components/shared/cover";
-import { ContentCard } from "@/components/platform/content/content-card";
 import { CourseCurriculum } from "@/components/platform/content/course-curriculum";
 import { ActionPanel } from "@/components/platform/content/action-panel";
 import { MaterialSummary } from "@/components/platform/content/material-summary";
 import { Reveal } from "@/components/animations/reveal";
-import { Stagger } from "@/components/animations/stagger";
 
 type ItemPageProps = {
   params: Promise<{ slug: string }>;
@@ -20,10 +18,6 @@ export default async function ItemPage({ params }: ItemPageProps) {
   const { slug } = await params;
   const item = findBySlug(slug);
   if (!item) notFound();
-
-  const related = items
-    .filter((i) => i.slug !== item.slug && i.category === item.category)
-    .slice(0, 5);
 
   const isCurso = item.type === "curso" || item.type === "mentoria";
   const isLeitura = item.type === "livro" || item.type === "pdf";
@@ -169,25 +163,6 @@ export default async function ItemPage({ params }: ItemPageProps) {
           )}
         </div>
       </div>
-
-      {related.length > 0 && (
-        <section className="mt-16">
-          <Reveal>
-            <h2 className="mb-5 font-display text-lg font-bold text-white">
-              Mais em {item.category}
-            </h2>
-          </Reveal>
-          <Stagger
-            direction="x"
-            step={70}
-            className="flex gap-4 overflow-x-auto pb-2 no-scrollbar"
-          >
-            {related.map((rel, i) => (
-              <ContentCard key={rel.slug} item={rel} placeholderIndex={i + 1} />
-            ))}
-          </Stagger>
-        </section>
-      )}
     </div>
   );
 }

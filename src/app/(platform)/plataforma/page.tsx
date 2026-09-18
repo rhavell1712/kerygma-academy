@@ -14,7 +14,7 @@ export default function PlataformaPage() {
     <div>
       <HeroCarousel items={featuredItems} />
 
-      <div className="-mt-14 space-y-12 pb-16">
+      <div className="relative z-10 space-y-12 pb-20 pt-14 sm:pt-16">
         {continueItems.length > 0 && <ContinueSection items={continueItems} />}
 
         <ShowcaseRow

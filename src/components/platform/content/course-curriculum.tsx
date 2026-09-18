@@ -139,19 +139,29 @@ export function CourseCurriculum({
                           />
                         )}
 
-                        <span
-                          className={`min-w-0 flex-1 truncate text-sm transition-colors group-hover/lesson:text-white ${
-                            isDone ? "text-ink-faint" : "text-ink-soft"
-                          } ${isDone ? "line-through decoration-ink-faint/40" : ""}`}
-                        >
-                          {lesson.title}
-                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={`min-w-0 truncate text-sm transition-colors group-hover/lesson:text-white ${
+                                isDone ? "text-ink-faint" : "text-ink-soft"
+                              } ${isDone ? "line-through decoration-ink-faint/40" : ""}`}
+                            >
+                              {lesson.title}
+                            </span>
 
-                        {lesson.free && (
-                          <span className="shrink-0 rounded-sm border border-emerald-500/25 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-emerald-300">
-                            Grátis
+                            {lesson.free && (
+                              <span className="shrink-0 rounded-sm border border-emerald-500/25 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-emerald-300">
+                                Grátis
+                              </span>
+                            )}
                           </span>
-                        )}
+
+                          {lesson.description && (
+                            <span className="mt-1 line-clamp-2 block text-xs leading-relaxed text-ink-faint">
+                              {lesson.description}
+                            </span>
+                          )}
+                        </span>
 
                         <span className="shrink-0 text-xs font-semibold text-ink-faint">
                           {lesson.duration}

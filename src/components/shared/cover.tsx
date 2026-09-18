@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Image as ImageIcon } from "lucide-react";
 import type { ContentItem } from "@/lib/types";
 
@@ -17,6 +18,7 @@ export function Cover({
   placeholderIndex,
 }: CoverProps) {
   const initial = item.title.charAt(0).toUpperCase();
+  const hasImage = Boolean(item.imageUrl);
 
   return (
     <div
@@ -25,21 +27,42 @@ export function Cover({
         background: `linear-gradient(140deg, ${item.cover.from} 0%, ${item.cover.to} 120%)`,
       }}
     >
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 opacity-[0.5]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 15%, rgba(255,255,255,0.10), transparent 40%),radial-gradient(circle at 85% 100%, rgba(255,255,255,0.06), transparent 45%)",
-        }}
-      />
+      {hasImage && (
+        <Image
+          src={item.imageUrl as string}
+          alt={item.title}
+          fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-cover"
+        />
+      )}
 
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-5 -top-10 select-none font-display text-[10rem] font-extrabold leading-none text-white/[0.05]"
-      >
-        {initial}
-      </span>
+      {hasImage && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent"
+        />
+      )}
+
+      {!hasImage && (
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 opacity-[0.5]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 20% 15%, rgba(255,255,255,0.10), transparent 40%),radial-gradient(circle at 85% 100%, rgba(255,255,255,0.06), transparent 45%)",
+            }}
+          />
+
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-5 -top-10 select-none font-display text-[10rem] font-extrabold leading-none text-white/[0.05]"
+          >
+            {initial}
+          </span>
+        </>
+      )}
 
       {showType && (
         <span
@@ -50,7 +73,7 @@ export function Cover({
         </span>
       )}
 
-      {placeholderIndex !== undefined && (
+      {!hasImage && placeholderIndex !== undefined && (
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2.5"

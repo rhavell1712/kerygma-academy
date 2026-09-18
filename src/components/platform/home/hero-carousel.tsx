@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Check,
@@ -86,6 +87,16 @@ export function HeroCarousel({ items }: HeroCarouselProps) {
               background: `linear-gradient(140deg, ${slide.cover.from} 0%, ${slide.cover.to} 130%)`,
             }}
           >
+            {slide.imageUrl && (
+              <Image
+                src={slide.imageUrl}
+                alt=""
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+            )}
             <div
               aria-hidden="true"
               className="absolute inset-0 opacity-60"
@@ -187,22 +198,41 @@ export function HeroCarousel({ items }: HeroCarouselProps) {
                   background: `linear-gradient(140deg, ${item.cover.from} 0%, ${item.cover.to} 130%)`,
                 }}
               />
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 opacity-50"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 25% 20%, rgba(255,255,255,0.10), transparent 45%),radial-gradient(circle at 85% 95%, rgba(255,255,255,0.06), transparent 50%)",
-                }}
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-black/30 text-white/80 ring-1 ring-white/15 backdrop-blur-sm">
-                  <ImageIcon size={18} strokeWidth={1.75} />
-                </span>
-                <span className="rounded-full bg-black/35 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/85 backdrop-blur-sm">
-                  imagem {index + 1}
-                </span>
-              </div>
+
+              {item.imageUrl ? (
+                <>
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    fill
+                    sizes="224px"
+                    className="object-cover"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent"
+                  />
+                </>
+              ) : (
+                <>
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 opacity-50"
+                    style={{
+                      backgroundImage:
+                        "radial-gradient(circle at 25% 20%, rgba(255,255,255,0.10), transparent 45%),radial-gradient(circle at 85% 95%, rgba(255,255,255,0.06), transparent 50%)",
+                    }}
+                  />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5">
+                    <span className="grid h-11 w-11 place-items-center rounded-full bg-black/30 text-white/80 ring-1 ring-white/15 backdrop-blur-sm">
+                      <ImageIcon size={18} strokeWidth={1.75} />
+                    </span>
+                    <span className="rounded-full bg-black/35 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/85 backdrop-blur-sm">
+                      imagem {index + 1}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

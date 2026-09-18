@@ -24,6 +24,7 @@ export function Stagger({
   const { ref, inView } = useInView<HTMLDivElement>({
     rootMargin,
     threshold: 0.08,
+    once: false,
   });
 
   const decorated = Children.toArray(children).map((child, index) => {

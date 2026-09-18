@@ -22,7 +22,7 @@ export function Reveal({
   className = "",
   rootMargin = "0px 0px -12% 0px",
   threshold = 0.12,
-  once = true,
+  once = false,
 }: RevealProps) {
   const { ref, inView } = useInView<HTMLDivElement>({
     rootMargin,

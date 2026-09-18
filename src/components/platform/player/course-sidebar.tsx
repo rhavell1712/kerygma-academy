@@ -87,13 +87,18 @@ export function CourseSidebar({
               key={group.moduleIndex}
               className="border-b border-line last:border-b-0"
             >
-              <div className="flex items-center justify-between gap-2 px-4 pb-1 pt-3">
-                <span className="truncate text-[13px] font-bold text-white">
-                  {group.moduleTitle}
-                </span>
-                <span className="shrink-0 text-[10px] font-semibold text-ink-faint">
-                  {group.lessons.length} aulas
-                </span>
+              <div className="px-4 pb-1 pt-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-ink-faint">
+                  Módulo {String(group.moduleIndex + 1).padStart(2, "0")}
+                </p>
+                <div className="mt-0.5 flex items-center justify-between gap-2">
+                  <span className="truncate text-[13px] font-bold text-white">
+                    {group.moduleTitle}
+                  </span>
+                  <span className="shrink-0 text-[10px] font-semibold text-ink-faint">
+                    {group.lessons.length} aulas
+                  </span>
+                </div>
               </div>
 
               <ul aria-label={group.moduleTitle} className="px-2 pb-2 pt-0.5">

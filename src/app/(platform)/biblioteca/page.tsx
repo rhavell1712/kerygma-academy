@@ -62,7 +62,7 @@ export default function BibliotecaPage() {
                 key={item.slug}
                 item={item}
                 index={index}
-                className="w-[min(100%,440px)]"
+                className="w-[min(100%,360px)]"
               />
             ))}
           </Stagger>

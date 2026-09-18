@@ -19,6 +19,7 @@ export function ImageReveal({
   const { ref, inView } = useInView<HTMLDivElement>({
     rootMargin,
     threshold: 0.15,
+    once: false,
   });
 
   return (

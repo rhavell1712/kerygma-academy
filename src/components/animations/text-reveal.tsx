@@ -22,6 +22,7 @@ export function TextReveal({
   const { ref, inView } = useInView<HTMLDivElement>({
     rootMargin,
     threshold: 0.1,
+    once: false,
   });
 
   const units = Children.toArray(children);

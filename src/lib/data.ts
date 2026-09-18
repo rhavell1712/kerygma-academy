@@ -1,4 +1,6 @@
 import type { ContentItem } from "./types";
+import { courseCurricula } from "./curriculum-data";
+import { formatMinutes, parseMinutes } from "./curriculum";
 
 const cat = {
   sistematica: "Teologia Sistemática",
@@ -39,24 +41,6 @@ export const items: ContentItem[] = [
     featured: true,
     accent: "#b91c2b",
     cover: { from: "#17111c", to: "#5a0d16" },
-    curriculum: [
-      {
-        title: "Módulo 01 — O que é teologia?",
-        lessons: [
-          { title: "Teologia como saber ordenado", duration: "42 min" },
-          { title: "As fontes da teologia", duration: "38 min" },
-          { title: "Teologia e vida cristã", duration: "35 min" },
-        ],
-      },
-      {
-        title: "Módulo 02 — Prolegômenos",
-        lessons: [
-          { title: "Revelação geral e especial", duration: "41 min" },
-          { title: "Autoridade da Escritura", duration: "47 min" },
-          { title: "Fé e razão", duration: "36 min" },
-        ],
-      },
-    ],
   },
   {
     slug: "cristologia",
@@ -76,7 +60,7 @@ export const items: ContentItem[] = [
     featured: true,
     accent: "#c8952c",
     cover: { from: "#1a130c", to: "#5c3a08" },
-    imageUrl: "",
+    imageUrl: "/img/Cristologia.jpg",
   },
   {
     slug: "hermeneutica-biblica",
@@ -98,7 +82,7 @@ export const items: ContentItem[] = [
     featured: true,
     accent: "#2f6f6c",
     cover: { from: "#0d1616", to: "#14423f" },
-    imageUrl: "",
+    imageUrl: "/img/hermeneutica.avif",
   },
   {
     slug: "pneumatologia",
@@ -433,6 +417,29 @@ export const items: ContentItem[] = [
     imageUrl: "",
   },
 ];
+
+for (const item of items) {
+  const curriculum = courseCurricula[item.slug];
+  if (!curriculum) continue;
+
+  const totalMinutes = curriculum.reduce(
+    (sum, module) =>
+      sum +
+      module.lessons.reduce(
+        (lessonSum, lesson) => lessonSum + parseMinutes(lesson.duration),
+        0,
+      ),
+    0,
+  );
+
+  item.curriculum = curriculum;
+  item.modules = curriculum.length;
+  item.lessons = curriculum.reduce(
+    (sum, module) => sum + module.lessons.length,
+    0,
+  );
+  item.duration = formatMinutes(totalMinutes);
+}
 
 export const courseItems = items.filter((item) => item.type === "curso");
 export const pdfItems = items.filter((item) => item.type === "pdf");

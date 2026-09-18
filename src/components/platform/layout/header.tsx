@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, User, Menu, X } from "lucide-react";
+import { Search, User, Library } from "lucide-react";
 
 const navLinks = [
   { label: "Início", href: "/plataforma" },
@@ -15,7 +15,6 @@ const navLinks = [
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isPlataforma = pathname === "/plataforma";
 
@@ -80,40 +79,15 @@ export function Header() {
             Minha biblioteca
           </Link>
 
-          <button
-            type="button"
-            aria-label="Menu"
-            onClick={() => setOpen((v) => !v)}
-            className="grid h-9 w-9 place-items-center rounded-md text-ink-soft hover:text-white lg:hidden"
+          <Link
+            href="/biblioteca"
+            aria-label="Minha biblioteca"
+            className="grid h-9 w-9 place-items-center rounded-md text-ink-soft transition hover:text-white sm:hidden"
           >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
+            <Library size={18} />
+          </Link>
         </div>
       </div>
-
-      {open && (
-        <nav className="border-t border-line bg-bg lg:hidden">
-          <div className="mx-auto max-w-[1240px] space-y-1 px-5 py-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="block rounded-md px-3 py-2.5 text-sm font-semibold text-ink-soft hover:bg-white/5 hover:text-white"
-              >
-                {link.label}
-              </Link>
-            ))}
-<Link
-              href="/biblioteca"
-              onClick={() => setOpen(false)}
-              className="block rounded-md px-3 py-2.5 text-sm font-semibold text-white"
-            >
-              Minha biblioteca
-            </Link>
-          </div>
-        </nav>
-      )}
     </header>
   );
 }
