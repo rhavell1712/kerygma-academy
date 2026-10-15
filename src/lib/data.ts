@@ -1,6 +1,4 @@
 import type { ContentItem } from "./types";
-import { courseCurricula } from "./curriculum-data";
-import { formatMinutes, parseMinutes } from "./curriculum";
 
 const cat = {
   sistematica: "Teologia Sistemática",
@@ -418,61 +416,6 @@ export const items: ContentItem[] = [
   },
 ];
 
-for (const item of items) {
-  const curriculum = courseCurricula[item.slug];
-  if (!curriculum) continue;
-
-  const totalMinutes = curriculum.reduce(
-    (sum, module) =>
-      sum +
-      module.lessons.reduce(
-        (lessonSum, lesson) => lessonSum + parseMinutes(lesson.duration),
-        0,
-      ),
-    0,
-  );
-
-  item.curriculum = curriculum;
-  item.modules = curriculum.length;
-  item.lessons = curriculum.reduce(
-    (sum, module) => sum + module.lessons.length,
-    0,
-  );
-  item.duration = formatMinutes(totalMinutes);
-}
-
 export const courseItems = items.filter((item) => item.type === "curso");
-export const pdfItems = items.filter((item) => item.type === "pdf");
-export const bookItems = items.filter((item) => item.type === "livro");
-export const mentorItems = items.filter((item) => item.type === "mentoria");
 
 export const featuredItems = items.filter((item) => item.featured);
-export const continueItems = items.filter(
-  (item) => item.owned && typeof item.progress === "number",
-);
-export const ownedItems = items.filter((item) => item.owned);
-
-export const findBySlug = (slug: string) =>
-  items.find((item) => item.slug === slug);
-
-export const categories = [
-  "Todos",
-  "Teologia Sistemática",
-  "Cristologia",
-  "Pneumatologia",
-  "Escatologia",
-  "Hermenêutica",
-  "Apologética",
-  "Bibliologia",
-  "Soteriologia",
-  "Eclesiologia",
-  "Teologia Pastoral",
-  "Estudos Bíblicos",
-];
-
-export const typeLabels: Record<string, string> = {
-  curso: "Curso",
-  pdf: "PDF",
-  livro: "Livro",
-  mentoria: "Mentoria",
-};

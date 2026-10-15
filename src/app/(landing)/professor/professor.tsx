@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Reveal } from "@/components/animations/reveal";
 import { TextReveal } from "@/components/animations/text-reveal";
 import { Stagger } from "@/components/animations/stagger";
@@ -10,32 +11,34 @@ const stats = [
 
 export function Professor() {
   return (
-    <section id="professor" className="border-b border-white/10 bg-panel">
+    <section id="professor" className="border-b border-line bg-panel">
       <div className="mx-auto grid max-w-310 items-start gap-10 px-5 py-24 sm:px-8 md:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
         <div className="relative order-2 aspect-3/4 max-w-95 lg:order-none">
           <div
             aria-hidden="true"
-            className="absolute -left-6 -top-6 h-full w-full rounded-sm border border-white/10"
+            className="absolute -left-6 -top-6 h-full w-full rounded-sm border border-line-strong"
           />
-          <div className="group absolute inset-0 overflow-hidden rounded-sm bg-[linear-gradient(145deg,#191019,#3a0d14)]">
+          <Reveal
+            direction="scale"
+            duration={1100}
+            className="group absolute inset-0 overflow-hidden rounded-sm bg-[linear-gradient(145deg,#191019,#3a0d14)] shadow-pop ring-1 ring-line-strong"
+          >
+            <Image
+              src="/img/professor.png"
+              alt="Prof. Ricardo Nunes"
+              fill
+              sizes="(max-width: 1024px) 90vw, 400px"
+              quality={90}
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            />
             <div
               aria-hidden="true"
-              className="absolute inset-0"
-              style={{
-                backgroundImage:
-                  "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
-                backgroundSize: "48px 48px",
-              }}
+              className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
             />
-            <div className="absolute inset-0 flex items-center justify-center transition-transform duration-700 group-hover:scale-[1.03]">
-              <span className="font-display text-[7rem] font-extrabold leading-none text-white/12">
-                RN
-              </span>
-            </div>
-            <p className="absolute bottom-5 left-5 font-display text-sm font-bold text-white/80 transition-transform duration-700 group-hover:-translate-y-0.5">
+            <p className="absolute bottom-5 left-5 font-display text-sm font-bold text-white/90 transition-transform duration-700 group-hover:-translate-y-0.5">
               Prof. Ricardo Nunes
             </p>
-          </div>
+          </Reveal>
         </div>
 
         <div className="order-1 lg:order-none">
@@ -46,7 +49,7 @@ export function Professor() {
             </p>
           </Reveal>
           <TextReveal delay={80}>
-            <h2 className="mt-5 font-display text-3xl font-extrabold tracking-[-0.02em] text-white sm:text-4xl">
+            <h2 className="mt-5 font-display text-3xl font-extrabold tracking-[-0.02em] text-ink sm:text-4xl">
               Aprenda com quem também continua estudando.
             </h2>
           </TextReveal>
@@ -63,7 +66,7 @@ export function Professor() {
 
           <Reveal direction="left" delay={200}>
             <blockquote className="mt-10 border-l-2 border-brand pl-6">
-              <p className="max-w-130 font-display text-2xl font-bold leading-snug tracking-[-0.01em] text-white">
+              <p className="max-w-130 font-display text-2xl font-bold leading-snug tracking-[-0.01em] text-ink">
                 &ldquo;Ensinar não é entregar respostas. É ajudar alguém a
                 fazer perguntas melhores.&rdquo;
               </p>
@@ -77,11 +80,11 @@ export function Professor() {
             direction="up"
             delay={120}
             step={110}
-            className="mt-12 grid max-w-140 grid-cols-3 divide-x divide-white/10 border-t border-white/10 pt-7"
+            className="mt-12 grid max-w-140 grid-cols-3 divide-x divide-line border-t border-line pt-7"
           >
             {stats.map((stat) => (
               <div key={stat.label} className="px-4 first:pl-0">
-                <strong className="font-display text-2xl font-extrabold tracking-tight text-white">
+                <strong className="font-display text-2xl font-extrabold tracking-tight text-ink">
                   {stat.value}
                 </strong>
                 <p className="mt-1 text-xs leading-tight text-ink-soft">

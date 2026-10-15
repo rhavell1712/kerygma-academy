@@ -1,11 +1,11 @@
 import { LandingHeader } from "./header/header";
 import { Hero } from "./hero/hero";
-import { Plataforma } from "./plataforma/plataforma";
+import { Cursos } from "./cursos/cursos";
+import { ComoFunciona } from "./mentoria/como-funciona";
 import { Professor } from "./professor/professor";
-import { Conteudos } from "./conteudos/conteudos";
-import { Depoimento } from "./depoimento/depoimento";
-import { Cta } from "./cta/cta";
 import { LandingFooter } from "./footer/footer";
+import { WhatsappFloat } from "./whatsapp/whatsapp-float";
+import { AdminFloat } from "./admin-entry/admin-entry";
 
 export default function LandingPage() {
   return (
@@ -14,14 +14,14 @@ export default function LandingPage() {
 
       <main>
         <Hero />
-        <Plataforma />
+        <Cursos />
+        <ComoFunciona />
         <Professor />
-        <Conteudos />
-        <Depoimento />
-        <Cta />
       </main>
 
       <LandingFooter />
+      <WhatsappFloat />
+      <AdminFloat />
     </div>
   );
 }

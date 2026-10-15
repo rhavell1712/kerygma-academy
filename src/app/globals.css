@@ -27,6 +27,33 @@
   --brand-ring: rgba(214, 40, 57, 0.38);
 }
 
+/* ============================================================
+   Tema claro — "pergaminho": papel quente + branco + vinho.
+   O brand continua vinho para manter identidade e contraste,
+   com hover mais escuro (no claro, escurecer = hierarquia).
+   ============================================================ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f7f3ec;
+  --panel: #fffdf8;
+  --card: #ffffff;
+  --elevated: #f0e8d8;
+
+  --ink: #1c1710;
+  --ink-soft: #5f5748;
+  --ink-faint: #a29a87;
+
+  --line: rgba(28, 23, 16, 0.09);
+  --line-strong: rgba(28, 23, 16, 0.18);
+
+  --brand: #b91c2b;
+  --brand-hover: #a31624;
+  --brand-dark: #7f101c;
+  --brand-soft: rgba(185, 28, 43, 0.09);
+  --brand-ring: rgba(185, 28, 43, 0.28);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-panel: var(--panel);
@@ -54,6 +81,193 @@
   --shadow-card: 0 2px 8px rgb(0 0 0 / 0.3), 0 12px 32px -12px rgb(0 0 0 / 0.5);
   --shadow-pop: 0 10px 36px -8px rgb(0 0 0 / 0.55), 0 2px 10px rgb(0 0 0 / 0.45);
   --shadow-brand: 0 12px 32px -10px var(--brand-ring);
+}
+
+/* Sombras quentes e suaves no tema claro */
+[data-theme="light"] {
+  --shadow-card: 0 1px 2px rgb(28 23 16 / 0.07), 0 16px 36px -18px rgb(28 23 16 / 0.25);
+  --shadow-pop: 0 2px 6px rgb(28 23 16 / 0.08), 0 26px 52px -18px rgb(28 23 16 / 0.3);
+  --shadow-brand: 0 12px 28px -10px rgba(185, 28, 43, 0.45);
+}
+
+/* ============================================================
+   Paleta alternativa — "Marinho & Terracota".
+   Light: azul profundo + laranja queimado.
+   Dark: grafite quase preto + cinza (profissional/noturno),
+   com terracota só no acento — sem fundo azulado.
+   ============================================================ */
+[data-palette="marinho"] {
+  --bg: #09090b;
+  --panel: #101014;
+  --card: #17171c;
+  --elevated: #232329;
+
+  --ink: #f5f3ee;
+  --ink-soft: #b3aea3;
+  --ink-faint: #6f6b62;
+
+  --line: rgba(245, 243, 238, 0.08);
+  --line-strong: rgba(245, 243, 238, 0.18);
+
+  --brand: #c2571d;
+  --brand-hover: #e0702f;
+  --brand-dark: #7e3410;
+  --brand-soft: rgba(194, 87, 29, 0.18);
+  --brand-ring: rgba(224, 112, 47, 0.42);
+
+  --shadow-card: 0 2px 8px rgb(0 0 0 / 0.4), 0 14px 34px -12px rgb(0 0 0 / 0.6);
+  --shadow-pop: 0 12px 40px -8px rgb(0 0 0 / 0.65), 0 2px 10px rgb(0 0 0 / 0.5);
+  --shadow-brand: 0 12px 32px -10px var(--brand-ring);
+}
+
+[data-palette="marinho"][data-theme="light"] {
+  --bg: #f2ede1;
+  --panel: #fffdf6;
+  --card: #ffffff;
+  --elevated: #e9e0cb;
+
+  --ink: #101c30;
+  --ink-soft: #4a5a75;
+  --ink-faint: #9aa5b8;
+
+  --line: rgba(16, 28, 48, 0.1);
+  --line-strong: rgba(16, 28, 48, 0.2);
+
+  --brand: #b54916;
+  --brand-hover: #93390f;
+  --brand-dark: #7e3410;
+  --brand-soft: rgba(181, 73, 22, 0.1);
+  --brand-ring: rgba(181, 73, 22, 0.3);
+
+  --shadow-card: 0 1px 2px rgb(16 28 48 / 0.08), 0 16px 36px -18px rgb(16 28 48 / 0.28);
+  --shadow-pop: 0 2px 6px rgb(16 28 48 / 0.09), 0 26px 52px -18px rgb(16 28 48 / 0.32);
+  --shadow-brand: 0 12px 28px -10px rgba(181, 73, 22, 0.45);
+}
+
+/* ============================================================
+   Paleta "Grafite & Ouro" — preto + dourado envelhecido.
+   Psicologia: autoridade acadêmica, tradição e excelência.
+   O dourado entra só no acento; o fundo é grafite neutro,
+   por isso funciona no dark sem cansar e no light com bronze.
+   ============================================================ */
+[data-palette="dourado"] {
+  --bg: #0c0c0e;
+  --panel: #131316;
+  --card: #1a1a1f;
+  --elevated: #252529;
+
+  --ink: #f5f2e9;
+  --ink-soft: #b8b2a2;
+  --ink-faint: #75705f;
+
+  --line: rgba(245, 242, 233, 0.08);
+  --line-strong: rgba(245, 242, 233, 0.18);
+
+  --brand: #9c7c14;
+  --brand-hover: #c2a11f;
+  --brand-dark: #6b550d;
+  --brand-soft: rgba(156, 124, 20, 0.18);
+  --brand-ring: rgba(194, 161, 31, 0.42);
+
+  --shadow-card: 0 2px 8px rgb(0 0 0 / 0.4), 0 14px 34px -12px rgb(0 0 0 / 0.6);
+  --shadow-pop: 0 12px 40px -8px rgb(0 0 0 / 0.65), 0 2px 10px rgb(0 0 0 / 0.5);
+  --shadow-brand: 0 12px 32px -10px var(--brand-ring);
+}
+
+[data-palette="dourado"][data-theme="light"] {
+  --bg: #f7f4ec;
+  --panel: #fffdf8;
+  --card: #ffffff;
+  --elevated: #ece4cf;
+
+  --ink: #1e1a10;
+  --ink-soft: #5f5745;
+  --ink-faint: #a19a83;
+
+  --line: rgba(30, 26, 16, 0.1);
+  --line-strong: rgba(30, 26, 16, 0.2);
+
+  --brand: #7d5f0e;
+  --brand-hover: #634b0a;
+  --brand-dark: #5c450a;
+  --brand-soft: rgba(125, 95, 14, 0.1);
+  --brand-ring: rgba(125, 95, 14, 0.3);
+
+  --shadow-card: 0 1px 2px rgb(30 26 16 / 0.08), 0 16px 36px -18px rgb(30 26 16 / 0.28);
+  --shadow-pop: 0 2px 6px rgb(30 26 16 / 0.09), 0 26px 52px -18px rgb(30 26 16 / 0.32);
+  --shadow-brand: 0 12px 28px -10px rgba(125, 95, 14, 0.45);
+}
+
+/* ============================================================
+   Paleta "Carvão & Aço" — cinza carvão + azul-aço dessaturado.
+   Psicologia: corporativo, sóbrio e institucional. É o neutro
+   profissional: fundo quase preto acinzentado, acento frio
+   contido, zero saturação chamativa.
+   ============================================================ */
+[data-palette="ardosia"] {
+  --bg: #0a0c10;
+  --panel: #11151b;
+  --card: #171d26;
+  --elevated: #222b38;
+
+  --ink: #f2f4f6;
+  --ink-soft: #a7b0bb;
+  --ink-faint: #646e7a;
+
+  --line: rgba(242, 244, 246, 0.08);
+  --line-strong: rgba(242, 244, 246, 0.18);
+
+  --brand: #4070a0;
+  --brand-hover: #5a8abf;
+  --brand-dark: #274a6e;
+  --brand-soft: rgba(64, 112, 160, 0.18);
+  --brand-ring: rgba(90, 138, 191, 0.42);
+
+  --shadow-card: 0 2px 8px rgb(0 0 0 / 0.4), 0 14px 34px -12px rgb(0 0 0 / 0.6);
+  --shadow-pop: 0 12px 40px -8px rgb(0 0 0 / 0.65), 0 2px 10px rgb(0 0 0 / 0.5);
+  --shadow-brand: 0 12px 32px -10px var(--brand-ring);
+}
+
+[data-palette="ardosia"][data-theme="light"] {
+  --bg: #f2f3f4;
+  --panel: #ffffff;
+  --card: #ffffff;
+  --elevated: #e3e7ea;
+
+  --ink: #141a21;
+  --ink-soft: #4f5b67;
+  --ink-faint: #99a3ae;
+
+  --line: rgba(20, 26, 33, 0.1);
+  --line-strong: rgba(20, 26, 33, 0.2);
+
+  --brand: #2f5378;
+  --brand-hover: #23405e;
+  --brand-dark: #274a6e;
+  --brand-soft: rgba(47, 83, 120, 0.1);
+  --brand-ring: rgba(47, 83, 120, 0.3);
+
+  --shadow-card: 0 1px 2px rgb(20 26 33 / 0.08), 0 16px 36px -18px rgb(20 26 33 / 0.28);
+  --shadow-pop: 0 2px 6px rgb(20 26 33 / 0.09), 0 26px 52px -18px rgb(20 26 33 / 0.32);
+  --shadow-brand: 0 12px 28px -10px rgba(47, 83, 120, 0.45);
+}
+
+/* Grade do hero — linhas claras no dark, linhas de tinta no light */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+[data-theme="light"] .hero-grid {
+  background-image:
+    linear-gradient(rgba(28, 23, 16, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 23, 16, 0.055) 1px, transparent 1px);
+}
+
+/* Transição suave entre temas nas superfícies */
+body, header, section, footer, article, nav {
+  transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
 @keyframes fade-up {

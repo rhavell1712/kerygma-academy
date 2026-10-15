@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -22,14 +23,25 @@ export const metadata: Metadata = {
     "Cursos, PDFs, livros e mentorias para estudar teologia com profundidade. Um acervo vivo para quem busca um entendimento sólido.",
 };
 
+const appearanceInitScript = `(function(){try{var t=localStorage.getItem('kerygma-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}var p=localStorage.getItem('kerygma-palette');if(p!=='marinho'&&p!=='dourado'&&p!=='ardosia'&&p!=='kerygma'){p='kerygma';}document.documentElement.dataset.theme=t;document.documentElement.dataset.palette=p;}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.palette='kerygma';}})();`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${jakarta.variable}`}>
+    <html
+      lang="pt-BR"
+      data-theme="dark"
+      data-palette="kerygma"
+      suppressHydrationWarning
+      className={`${inter.variable} ${jakarta.variable}`}
+    >
       <body>{children}</body>
+      <Script id="appearance-init" strategy="beforeInteractive">
+        {appearanceInitScript}
+      </Script>
     </html>
   );
 }

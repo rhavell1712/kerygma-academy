@@ -14,20 +14,12 @@ const stats = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-white/10">
+    <section className="relative overflow-hidden border-b border-line">
       <Parallax
         speed={0.1}
         className="pointer-events-none absolute -inset-10"
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-            backgroundSize: "72px 72px",
-          }}
-        />
+        <div aria-hidden="true" className="hero-grid absolute inset-0" />
       </Parallax>
       <div
         aria-hidden="true"
@@ -45,7 +37,7 @@ export function Hero() {
               Educação teológica em profundidade
             </p>
 
-            <h1 className="mt-6 font-display text-[clamp(2.4rem,5.5vw,4rem)] font-extrabold leading-[1.03] tracking-[-0.02em] text-white">
+            <h1 className="mt-6 font-display text-[clamp(2.4rem,5.5vw,4rem)] font-extrabold leading-[1.03] tracking-[-0.02em] text-ink">
               <span
                 className="hero-anim-line"
                 style={{ "--hero-delay": "140ms" } as CSSProperties}
@@ -82,28 +74,28 @@ export function Hero() {
               style={{ "--hero-delay": "520ms" } as CSSProperties}
             >
               <Link
-                href="/plataforma"
+                href="#mentorias"
                 className="group inline-flex items-center justify-center gap-2 rounded-sm bg-brand px-7 py-3.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-hover hover:scale-[1.03] active:scale-[0.98]"
               >
-                Conhecer a plataforma
+                Ver mentorias
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </Link>
 
               <a
                 href="#professor"
-                className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/20 px-7 py-3.5 text-sm font-bold text-white transition hover:border-white/50 hover:scale-[1.03] active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-sm border border-line-strong px-7 py-3.5 text-sm font-bold text-ink transition hover:border-ink/40 hover:scale-[1.03] active:scale-[0.98]"
               >
                 Conhecer o professor
               </a>
             </div>
 
             <div
-              className="hero-anim mt-14 grid max-w-130 grid-cols-3 divide-x divide-white/10 border-t border-white/10 pt-7"
+              className="hero-anim mt-14 grid max-w-130 grid-cols-3 divide-x divide-line border-t border-line pt-7"
               style={{ "--hero-delay": "660ms" } as CSSProperties}
             >
               {stats.map((stat) => (
                 <div key={stat.label} className="px-4 first:pl-0">
-                  <strong className="font-display text-2xl font-extrabold tracking-tight text-white">
+                  <strong className="font-display text-2xl font-extrabold tracking-tight text-ink">
                     {stat.value}
                   </strong>
                   <p className="mt-1 text-xs leading-tight text-ink-soft">
@@ -126,7 +118,7 @@ export function Hero() {
               <Cover
                 item={featuredItems[0]}
                 placeholderIndex={1}
-                className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-white/15 shadow-pop"
+                className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
               />
             </div>
             <div
@@ -137,7 +129,7 @@ export function Hero() {
                 <Cover
                   item={featuredItems[1]}
                   placeholderIndex={2}
-                  className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-white/15 shadow-pop"
+                  className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
                 />
               )}
             </div>
@@ -149,7 +141,7 @@ export function Hero() {
                 <Cover
                   item={featuredItems[2]}
                   placeholderIndex={3}
-                  className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-white/15 shadow-pop"
+                  className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
                 />
               )}
             </div>
