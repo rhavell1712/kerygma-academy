@@ -46,31 +46,31 @@ export function Hero() {
               Educação teológica em profundidade
             </p>
 
-            <h1 className="mt-6 font-display text-[clamp(2.4rem,5.5vw,4rem)] font-extrabold leading-[1.03] tracking-[-0.02em] text-ink">
+            <h1 className="mt-6 font-display text-[clamp(2rem,4.5vw,3.5rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-ink">
               <span
                 className="hero-anim-line"
                 style={{ "--hero-delay": "140ms" } as CSSProperties}
               >
-                <span className="hero-line-inner">Teologia responsável e equilibrada para  </span>
+                <span className="hero-line-inner">Teologia responsável</span>
               </span>
               <span
                 className="hero-anim-line"
                 style={{ "--hero-delay": "220ms" } as CSSProperties}
               >
-                <span className="hero-line-inner">preparar a sua igreja para o ministério</span>
+                <span className="hero-line-inner">e equilibrada para</span>
               </span>
               <span
                 className="hero-anim-line"
                 style={{ "--hero-delay": "300ms" } as CSSProperties}
               >
                 <span className="hero-line-inner text-brand-hover">
-                  e profundidade.
+                  o ministério
                 </span>
               </span>
             </h1>
 
             <p
-              className="hero-anim mt-6 max-w-130 text-[15px] leading-relaxed text-ink-soft"
+              className="hero-anim mt-6 max-w-130 text-[14px] leading-relaxed text-ink-soft"
               style={{ "--hero-delay": "420ms" } as CSSProperties}
             >
               Se você busca aperfeicoamento ministerial e crescimento da sua comunidade está no lugar certo.
