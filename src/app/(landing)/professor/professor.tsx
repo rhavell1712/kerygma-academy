@@ -7,7 +7,7 @@ export function Professor() {
   return (
     <section id="professor" className="border-b border-line bg-panel">
       <div className="mx-auto grid max-w-310 items-start gap-10 px-5 py-24 sm:px-8 md:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
-        <div className="relative order-2 aspect-3/4 max-w-95 lg:order-none">
+        <div className="relative order-1 aspect-3/4 max-w-95 lg:order-none">
           <div
             aria-hidden="true"
             className="absolute -left-6 -top-6 h-full w-full rounded-sm border border-line-strong"
@@ -35,7 +35,7 @@ export function Professor() {
           </Reveal>
         </div>
 
-        <div className="order-1 lg:order-none">
+        <div className="order-2 lg:order-none">
           <Reveal direction="left">
             <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-ink-soft">
               <span className="h-px w-8 bg-brand" />

@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: "Mispá Treinamentos — Conhecimento teológico em profundidade",
   description:
     "Cursos, PDFs, livros e treinamentos para estudar teologia com profundidade. Um acervo vivo para quem busca um entendimento sólido.",
+  icons: {
+    icon: "/img/logo.png",
+  },
 };
 
 const appearanceInitScript = `(function(){try{var t=localStorage.getItem('kerygma-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})();`;
