@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "Cursos, PDFs, livros e treinamentos para estudar teologia com profundidade. Um acervo vivo para quem busca um entendimento sólido.",
 };
 
-const appearanceInitScript = `(function(){try{var t=localStorage.getItem('kerygma-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}var p=localStorage.getItem('kerygma-palette');if(p!=='marinho'&&p!=='dourado'&&p!=='ardosia'&&p!=='kerygma'){p='kerygma';}document.documentElement.dataset.theme=t;document.documentElement.dataset.palette=p;}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.palette='kerygma';}})();`;
+const appearanceInitScript = `(function(){try{var t=localStorage.getItem('kerygma-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})();`;
 
 export default function RootLayout({
   children,
@@ -33,7 +33,6 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       data-theme="dark"
-      data-palette="kerygma"
       suppressHydrationWarning
       className={`${inter.variable} ${jakarta.variable}`}
     >

@@ -1,16 +1,8 @@
 import { useSyncExternalStore } from "react";
 
 export type Theme = "light" | "dark";
-export type Palette = "kerygma" | "marinho" | "dourado" | "ardosia";
-
-export const PALETTES: Palette[] = ["kerygma", "marinho", "dourado", "ardosia"];
-
-export function isPalette(value: string | undefined): value is Palette {
-  return (PALETTES as string[]).includes(value ?? "");
-}
 
 const THEME_KEY = "kerygma-theme";
-const PALETTE_KEY = "kerygma-palette";
 const EVENT = "kerygma:appearance";
 
 function subscribe(callback: () => void) {
@@ -18,15 +10,12 @@ function subscribe(callback: () => void) {
   return () => window.removeEventListener(EVENT, callback);
 }
 
-function getSnapshot(): `${Theme}|${string}` {
-  const theme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
-  const raw = document.documentElement.dataset.palette;
-  const palette = isPalette(raw) ? raw : "kerygma";
-  return `${theme}|${palette}`;
+function getSnapshot(): Theme {
+  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
-function getServerSnapshot(): `${Theme}|${Palette}` {
-  return "dark|kerygma";
+function getServerSnapshot(): Theme {
+  return "dark";
 }
 
 function notify() {
@@ -47,14 +36,7 @@ export function setTheme(theme: Theme) {
   notify();
 }
 
-export function setPalette(palette: Palette) {
-  document.documentElement.dataset.palette = palette;
-  persist(PALETTE_KEY, palette);
-  notify();
-}
-
-export function useAppearance(): { theme: Theme; palette: Palette } {
-  const key = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const [theme, palette] = key.split("|") as [Theme, Palette];
-  return { theme, palette };
+export function useAppearance(): { theme: Theme } {
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return { theme };
 }

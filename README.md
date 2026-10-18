@@ -16,11 +16,11 @@ Site institucional da Mispá Treinamentos com vitrine de mentorias ao vivo e pai
 ├── src/
 │   ├── proxy.ts                 # Middleware (Next 16): protege /admin, força login
 │   ├── app/
-│   │   ├── layout.tsx           # Layout raiz, fontes e script de tema/paleta
-│   │   ├── globals.css          # Temas (dark/light), 4 paletas, animações
+│   │   ├── layout.tsx           # Layout raiz, fontes e script de tema
+│   │   ├── globals.css          # Temas (dark/light) e animações
 │   │   ├── (landing)/           # Página pública (rota /)
 │   │   │   ├── page.tsx         # Busca mentorias publicadas e monta a vitrine
-│   │   │   ├── header/          # Navbar + toggle de tema + menu de paletas
+│   │   │   ├── header/          # Navbar + toggle de tema
 │   │   │   ├── hero/            # Hero decorativo
 │   │   │   ├── cursos/          # Cards de mentorias + modal de detalhe
 │   │   │   ├── mentoria/        # Seção "Como funciona"
@@ -43,7 +43,7 @@ Site institucional da Mispá Treinamentos com vitrine de mentorias ao vivo e pai
 │   │   └── shared/              # cover, confirm-dialog, select-menu, whatsapp-icon
 │   ├── hooks/
 │   │   ├── use-admin-access.ts  # Verifica se a sessão é de administrador
-│   │   ├── use-appearance.ts    # Estado de tema e paleta (data-theme/data-palette)
+│   │   ├── use-appearance.ts    # Estado do tema claro/escuro (data-theme)
 │   │   └── use-in-view.ts       # IntersectionObserver para animações
 │   ├── lib/
 │   │   ├── supabase/
