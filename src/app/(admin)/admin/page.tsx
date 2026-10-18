@@ -23,6 +23,7 @@ import {
 } from "@/app/actions/mentorias";
 import { listLeadsAction, clearLeadsAction } from "@/app/actions/leads";
 import { createClient } from "@/lib/supabase/client";
+import type { MentoriaRow } from "@/services/mentorias";
 
 type Lead = {
   id: string;
@@ -49,28 +50,6 @@ function formatLeadDate(iso: string) {
     return iso;
   }
 }
-
-type MentoriaRow = {
-  id: string;
-  slug: string;
-  title: string;
-  category: string;
-  level: string;
-  description: string;
-  long: string;
-  topics: string[];
-  encontros: string;
-  duracao: string;
-  formato: string;
-  para_quem: string;
-  image_url: string | null;
-  image_alt: string | null;
-  accent: string;
-  published: boolean;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-};
 
 type Tab = "resumo" | "mentorias" | "leads";
 

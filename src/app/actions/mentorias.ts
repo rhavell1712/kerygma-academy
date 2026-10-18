@@ -46,8 +46,8 @@ export async function logoutAction() {
   redirect("/admin/login");
 }
 
-export async function createMentoriaAction(formData: FormData) {
-  const data: MentoriaInput = {
+function mentoriaInputFromFormData(formData: FormData): MentoriaInput {
+  return {
     slug: String(formData.get("slug") ?? "").trim(),
     title: String(formData.get("title") ?? "").trim(),
     category: String(formData.get("category") ?? "").trim() || "Mentoria",
@@ -65,6 +65,10 @@ export async function createMentoriaAction(formData: FormData) {
     published: formData.get("published") === "on",
     sort_order: Number(formData.get("sort_order") ?? 0),
   };
+}
+
+export async function createMentoriaAction(formData: FormData) {
+  const data = mentoriaInputFromFormData(formData);
 
   if (!data.slug || !data.title || !data.description || data.topics.length === 0) {
     return { error: "Preencha os campos obrigatórios." };
@@ -81,26 +85,9 @@ export async function createMentoriaAction(formData: FormData) {
 }
 
 export async function updateMentoriaAction(id: string, formData: FormData) {
-  const data: Partial<MentoriaInput> = {
-    slug: String(formData.get("slug") ?? "").trim(),
-    title: String(formData.get("title") ?? "").trim(),
-    category: String(formData.get("category") ?? "").trim() || "Mentoria",
-    level: String(formData.get("level") ?? "Iniciante"),
-    description: String(formData.get("description") ?? "").trim(),
-    long: String(formData.get("long") ?? "").trim(),
-    topics: String(formData.get("topics") ?? "").split("\n").map((t) => t.trim()).filter(Boolean),
-    encontros: String(formData.get("encontros") ?? "").trim() || "A combinar",
-    duracao: String(formData.get("duracao") ?? "").trim() || "A combinar",
-    formato: String(formData.get("formato") ?? "").trim() || "Ao vivo",
-    para_quem: String(formData.get("para_quem") ?? "").trim() || "Todos",
-    image_url: String(formData.get("image_url") ?? "").trim() || null,
-    image_alt: String(formData.get("image_alt") ?? "").trim() || null,
-    accent: String(formData.get("accent") ?? "#b91c2b"),
-    published: formData.get("published") === "on",
-    sort_order: Number(formData.get("sort_order") ?? 0),
-  };
+  const data = mentoriaInputFromFormData(formData);
 
-  if (!data.slug || !data.title || !data.description || (data.topics ?? []).length === 0) {
+  if (!data.slug || !data.title || !data.description || data.topics.length === 0) {
     return { error: "Preencha os campos obrigatórios." };
   }
 
