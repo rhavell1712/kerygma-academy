@@ -68,13 +68,7 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
           ) : (
             <Cover
               item={{
-                slug: mentoria.slug,
-                type: "mentoria",
-                category: mentoria.category,
                 title: mentoria.title,
-                description: mentoria.description,
-                price: 0,
-                rating: 5,
                 accent: mentoria.accent,
                 cover: mentoria.cover,
               }}

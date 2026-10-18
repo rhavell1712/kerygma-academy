@@ -46,8 +46,6 @@ Site institucional da Mispá Treinamentos com vitrine de mentorias ao vivo e pai
 │   │   │   ├── client.ts        # Cliente Supabase (browser)
 │   │   │   └── server.ts        # Cliente Supabase (server, com cookies)
 │   │   ├── mentorias.ts         # Tipo Mentoria (view da UI, camelCase)
-│   │   ├── data.ts              # Catálogo estático usado no hero
-│   │   ├── types.ts             # Tipos do catálogo (ContentItem etc.)
 │   │   ├── site.ts              # Número do WhatsApp e helper waLink()
 │   │   └── track-lead.ts        # Wrapper client para registrar cliques
 │   └── services/
@@ -114,6 +112,8 @@ O login do painel exige **duas** coisas: um usuário autenticado no Supabase Aut
 3. Acesse `/admin/login` no site e entre com o e-mail e a senha criados.
 
 Para revogar o acesso, basta excluir a linha de `public.admin_users` (o usuário continua existindo no Auth, mas perde acesso ao painel e aos dados protegidos por RLS).
+
+> **Recomendação de segurança:** como os administradores são criados manualmente, desabilite o cadastro público em **Authentication → Providers → Email → Enable sign ups** no painel do Supabase. Contas criadas por signup continuam sem acesso ao painel (a RLS bloqueia), mas poluem a lista de usuários. Essa configuração é feita no painel do Supabase em nuvem — o `supabase/config.toml` deste repositório só afeta o ambiente local.
 
 ## Comandos
 

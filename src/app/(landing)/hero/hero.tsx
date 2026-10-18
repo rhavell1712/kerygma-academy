@@ -2,7 +2,27 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Cover } from "@/components/shared/cover";
-import { featuredItems } from "@/lib/data";
+
+const heroCovers = [
+  {
+    title: "Fundamentos da Fé",
+    accent: "#b91c2b",
+    cover: { from: "#141114", to: "#b91c2b" },
+    imageUrl: "/img/639d7879-9d21-413f-b262-c9bd767179cc.png",
+  },
+  {
+    title: "O Cristo das Escrituras",
+    accent: "#c8952c",
+    cover: { from: "#141114", to: "#c8952c" },
+    imageUrl: "/img/Cristologia.jpg",
+  },
+  {
+    title: "Interpretação Bíblica na Prática",
+    accent: "#2f6f6c",
+    cover: { from: "#141114", to: "#2f6f6c" },
+    imageUrl: "/img/hermeneutica.avif",
+  },
+];
 
 const stats = [
   { value: "40+", label: "conteúdos disponíveis" },
@@ -110,7 +130,7 @@ export function Hero() {
               style={{ "--hero-delay": "340ms" } as CSSProperties}
             >
               <Cover
-                item={featuredItems[0]}
+                item={heroCovers[0]}
                 placeholderIndex={1}
                 className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
               />
@@ -119,25 +139,21 @@ export function Hero() {
               className="hero-cover absolute bottom-4 right-0 aspect-3/4 w-44 rotate-[5deg] lg:bottom-6 lg:w-56"
               style={{ "--hero-delay": "470ms" } as CSSProperties}
             >
-              {featuredItems[1] && (
-                <Cover
-                  item={featuredItems[1]}
-                  placeholderIndex={2}
-                  className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
-                />
-              )}
+              <Cover
+                item={heroCovers[1]}
+                placeholderIndex={2}
+                className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
+              />
             </div>
             <div
               className="hero-cover absolute left-4 top-14 aspect-3/4 w-32 rotate-[4deg] lg:left-2 lg:top-16 lg:w-40"
               style={{ "--hero-delay": "590ms" } as CSSProperties}
             >
-              {featuredItems[2] && (
-                <Cover
-                  item={featuredItems[2]}
-                  placeholderIndex={3}
-                  className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
-                />
-              )}
+              <Cover
+                item={heroCovers[2]}
+                placeholderIndex={3}
+                className="absolute inset-0 h-full w-full rounded-sm ring-1 ring-line-strong shadow-pop"
+              />
             </div>
           </div>
         </div>

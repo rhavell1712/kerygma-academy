@@ -1,9 +1,16 @@
 import Image from "next/image";
 import { Image as ImageIcon } from "lucide-react";
-import type { ContentItem } from "@/lib/types";
+
+type CoverItem = {
+  title: string;
+  accent: string;
+  cover: { from: string; to: string };
+  imageUrl?: string;
+  type?: string;
+};
 
 type CoverProps = {
-  item: ContentItem;
+  item: CoverItem;
   className?: string;
   showType?: boolean;
   title?: boolean;
