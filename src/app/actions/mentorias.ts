@@ -55,11 +55,20 @@ export async function loginAction(formData: FormData) {
     };
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    await supabase.auth.signOut();
+    return { error: "Não foi possível iniciar a sessão. Tente novamente." };
+  }
+
   const { data: adminUser } = await supabase
     .from("admin_users")
     .select("id")
-    .eq("user_id", (await supabase.auth.getUser()).data.user?.id)
-    .single();
+    .eq("user_id", user.id)
+    .maybeSingle();
 
   if (!adminUser) {
     await supabase.auth.signOut();
