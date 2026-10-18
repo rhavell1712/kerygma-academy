@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { PaletteMenu } from "./palette-menu";
+import { AdminNavLink } from "../admin-entry/admin-entry";
 
 const links = [
   { label: "Treinamentos", href: "#treinamentos" },
@@ -70,6 +71,7 @@ export function LandingHeader() {
 
         <ThemeToggle />
         <PaletteMenu />
+        <AdminNavLink />
 
         <button
           type="button"

@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { X, Check, CalendarRange, Clock, Video, UserRound, MessageCircle } from "lucide-react";
+import { X, Check, CalendarRange, Clock, Video, UserRound } from "lucide-react";
 import { Cover } from "@/components/shared/cover";
+import { WhatsappIcon } from "@/components/shared/whatsapp-icon";
 import type { Mentoria } from "@/lib/mentorias";
 import { waLink } from "@/lib/site";
 import { trackLead } from "@/lib/track-lead";
@@ -148,7 +149,7 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
             onClick={() => trackLead(mentoria.title, "modal")}
             className="mt-7 flex items-center justify-center gap-2.5 rounded-md bg-[#25d366] px-6 py-4 text-sm font-bold text-[#062b16] transition hover:brightness-110 hover:scale-[1.01] active:scale-[0.99]"
           >
-            <MessageCircle size={18} />
+            <WhatsappIcon size={18} />
             Quero participar — falar no WhatsApp
           </a>
           <p className="mt-3 text-center text-xs text-ink-faint">

@@ -27,18 +27,22 @@ Site institucional da Mispá Treinamentos com vitrine de mentorias ao vivo e pai
 │   │   │   ├── professor/       # Seção "Quem ensina"
 │   │   │   ├── footer/          # Rodapé
 │   │   │   ├── whatsapp/        # Botão flutuante de WhatsApp
-│   │   │   └── admin-entry/     # Botão flutuante para o painel
+│   │   │   └── admin-entry/     # Acesso ao painel (flutuante + navbar, só admins)
 │   │   ├── (admin)/
 │   │   │   └── admin/
-│   │   │       ├── page.tsx     # Painel: mentorias (CRUD) e interessados
+│   │   │       ├── page.tsx     # Painel: orquestra abas, formulário e diálogos
+│   │   │       ├── _components/ # Form de mentoria, header e seções do painel
+│   │   │       ├── settings/    # Configurações: perfil, administradores, senha
 │   │   │       └── login/       # Login do administrador
 │   │   └── actions/
 │   │       ├── mentorias.ts     # Server actions: login, logout, CRUD de mentorias
-│   │       └── leads.ts         # Server actions: registrar/limpar/ listar leads
+│   │       ├── leads.ts         # Server actions: registrar/limpar/ listar leads
+│   │       └── settings.ts      # Server actions: perfil, senha e administradores
 │   ├── components/
 │   │   ├── animations/          # Reveal, TextReveal, Stagger (scroll animations)
-│   │   └── shared/cover.tsx     # Capa com gradiente para cards/hero
+│   │   └── shared/              # cover, confirm-dialog, select-menu, whatsapp-icon
 │   ├── hooks/
+│   │   ├── use-admin-access.ts  # Verifica se a sessão é de administrador
 │   │   ├── use-appearance.ts    # Estado de tema e paleta (data-theme/data-palette)
 │   │   └── use-in-view.ts       # IntersectionObserver para animações
 │   ├── lib/
@@ -66,6 +70,8 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<chave-publica-anon>
 
 Ambas as variáveis ficam no painel do Supabase em **Project Settings → API**. O `.env.local` está no `.gitignore` e nunca deve ser commitado.
 
+Opcional (apenas servidor): `SUPABASE_SECRET_KEY` — habilita o envio de convites de administrador pelo painel de configurações. Nunca use o prefixo `NEXT_PUBLIC_` em chaves secretas.
+
 ## Configuração do Supabase
 
 ### 1. Estrutura do banco (migrations)
@@ -81,6 +87,7 @@ As migrations em `supabase/migrations/` devem ser aplicadas **em ordem numérica
 | `005_harden_admin_users_rls.sql` | Recria a política de leitura de `admin_users` de forma idempotente |
 | `006_test_seed_many_mentorias.sql` | **Teste:** insere 24 mentorias temporárias de carga |
 | `007_test_cleanup_mentorias.sql` | **Teste:** remove as linhas inseridas por 006 (saldo líquido zero) |
+| `008_admin_settings.sql` | Configurações do admin: funções `is_admin`/`sync_admin_email`/`add_admin_by_email` e RLS de listagem/inclusão/revogação de administradores |
 
 O bucket de storage `mentoria-images` é criado pela migration 004 (público, 2 MB máx., formatos jpeg/png/webp/avif).
 
@@ -111,7 +118,9 @@ O login do painel exige **duas** coisas: um usuário autenticado no Supabase Aut
    O `user_id` é o ID exibido na lista de usuários de Authentication.
 3. Acesse `/admin/login` no site e entre com o e-mail e a senha criados.
 
-Para revogar o acesso, basta excluir a linha de `public.admin_users` (o usuário continua existindo no Auth, mas perde acesso ao painel e aos dados protegidos por RLS).
+Para revogar o acesso, basta excluir a linha de `public.admin_users` (o usuário continua existindo no Auth, mas perde acesso ao painel e aos dados protegidos por RLS). Também é possível revogar pela área **Configurações → Administradores** do painel (`/admin/settings`).
+
+Na mesma área, um administrador pode adicionar outro administrador informando o e-mail: a pessoa precisa ter uma conta **confirmada** no Supabase Auth (informar apenas um e-mail não concede acesso). Se a variável `SUPABASE_SECRET_KEY` (chave secreta do projeto, em Project Settings → API) estiver configurada no servidor, o painel envia um convite por e-mail pelo próprio Supabase Auth; sem ela, a conta deve ser criada antes em **Authentication → Users**.
 
 > **Recomendação de segurança:** como os administradores são criados manualmente, desabilite o cadastro público em **Authentication → Providers → Email → Enable sign ups** no painel do Supabase. Contas criadas por signup continuam sem acesso ao painel (a RLS bloqueia), mas poluem a lista de usuários. Essa configuração é feita no painel do Supabase em nuvem — o `supabase/config.toml` deste repositório só afeta o ambiente local.
 
@@ -131,4 +140,5 @@ npm start        # rodar o build de produção
 |---|---|
 | `/` | Landing pública com vitrine de mentorias |
 | `/admin` | Painel administrativo (exige login; protegido por `src/proxy.ts` + RLS) |
+| `/admin/settings` | Configurações: perfil, administradores e senha (exige login + `admin_users`) |
 | `/admin/login` | Login do administrador |

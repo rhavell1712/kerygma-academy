@@ -1,7 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { LayoutDashboard } from "lucide-react";
+import { useAdminAccess } from "@/hooks/use-admin-access";
 
 export function AdminFloat() {
+  const isAdmin = useAdminAccess();
+
+  if (!isAdmin) return null;
+
   return (
     <Link
       href="/admin"
@@ -10,6 +17,23 @@ export function AdminFloat() {
     >
       <LayoutDashboard size={17} />
       Entrar no Painel Admin
+    </Link>
+  );
+}
+
+export function AdminNavLink() {
+  const isAdmin = useAdminAccess();
+
+  if (!isAdmin) return null;
+
+  return (
+    <Link
+      href="/admin"
+      aria-label="Entrar no Painel Admin"
+      title="Entrar no Painel Admin"
+      className="grid h-9 w-9 shrink-0 place-items-center rounded-sm text-ink-soft ring-1 ring-line-strong transition hover:text-ink hover:ring-brand-ring"
+    >
+      <LayoutDashboard size={17} />
     </Link>
   );
 }

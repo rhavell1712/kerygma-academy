@@ -1,9 +1,10 @@
 "use client";
 
-import { MousePointerClick, MessageCircle, Video, Sprout } from "lucide-react";
+import { MousePointerClick, Video, Sprout } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
 import { TextReveal } from "@/components/animations/text-reveal";
 import { Stagger } from "@/components/animations/stagger";
+import { WhatsappIcon } from "@/components/shared/whatsapp-icon";
 import { waLink } from "@/lib/site";
 import { trackLead } from "@/lib/track-lead";
 
@@ -15,7 +16,7 @@ const steps = [
     text: "Veja a vitrine acima e toque em ver detalhes para conhecer o conteúdo de cada treinamento.",
   },
   {
-    icon: MessageCircle,
+    icon: WhatsappIcon,
     number: "02",
     title: "Chame no WhatsApp",
     text: "Fale direto com a gente, tire suas dúvidas e agende seus encontros no melhor horário.",
@@ -94,7 +95,7 @@ export function ComoFunciona() {
             onClick={() => trackLead("Todos os treinamentos", "como-funciona")}
             className="inline-flex items-center gap-2.5 rounded-sm bg-[#25d366] px-8 py-4 text-sm font-bold text-[#062b16] transition hover:brightness-110 hover:scale-[1.02] active:scale-[0.99]"
           >
-            <MessageCircle size={17} />
+            <WhatsappIcon size={17} />
             Falar no WhatsApp
           </a>
         </Reveal>

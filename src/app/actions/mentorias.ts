@@ -11,8 +11,29 @@ import {
   type MentoriaInput,
 } from "@/services/mentorias";
 
+function describeLoginError(error: { code?: string | null; message?: string | null }) {
+  const raw = `${error.code ?? ""} ${error.message ?? ""}`.toLowerCase();
+
+  if (/rate.?limit|too many requests/.test(raw)) {
+    return "Muitas tentativas de acesso. Aguarde um minuto e tente novamente.";
+  }
+  if (/not confirmed|confirmation/.test(raw)) {
+    return "O e-mail ainda não foi confirmado. Abra o link de confirmação recebido no cadastro e tente de novo.";
+  }
+  if (/fetch|network|connect/.test(raw)) {
+    return "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.";
+  }
+  if (/invalid login credentials|invalid credentials|invalid email or password/.test(raw)) {
+    return "E-mail ou senha incorretos.";
+  }
+  return "Não foi possível entrar. Verifique seus dados e tente novamente.";
+}
+
 export async function loginAction(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .replace(/\.+$/, "")
+    .toLowerCase();
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
@@ -20,10 +41,18 @@ export async function loginAction(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    return { error: "E-mail ou senha incorretos." };
+  try {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      console.error("Login recusado pelo Supabase:", error);
+      return { error: describeLoginError(error) };
+    }
+  } catch (e) {
+    console.error("Falha de conexão no login:", e);
+    return {
+      error: "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.",
+    };
   }
 
   const { data: adminUser } = await supabase

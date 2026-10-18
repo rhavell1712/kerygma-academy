@@ -44,7 +44,10 @@ export default function LoginPage() {
               name="email"
               type="email"
               required
-              autoComplete="email"
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="seu@email.com"
               className="w-full rounded-md border border-line-strong bg-bg px-3.5 py-3 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-brand"
             />
@@ -59,6 +62,9 @@ export default function LoginPage() {
               type="password"
               required
               autoComplete="current-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="Sua senha"
               className="w-full rounded-md border border-line-strong bg-bg px-3.5 py-3 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-brand"
             />
