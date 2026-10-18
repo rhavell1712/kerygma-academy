@@ -24,12 +24,6 @@ const heroCovers = [
   },
 ];
 
-const stats = [
-  { value: "40+", label: "conteúdos disponíveis" },
-  { value: "3 mil+", label: "alunos" },
-  { value: "4,9", label: "avaliação média" },
-];
-
 export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-line">
@@ -57,13 +51,13 @@ export function Hero() {
                 className="hero-anim-line"
                 style={{ "--hero-delay": "140ms" } as CSSProperties}
               >
-                <span className="hero-line-inner">Estude teologia</span>
+                <span className="hero-line-inner">Teologia responsável e equilibrada para  </span>
               </span>
               <span
                 className="hero-anim-line"
                 style={{ "--hero-delay": "220ms" } as CSSProperties}
               >
-                <span className="hero-line-inner">com rigor, ordem</span>
+                <span className="hero-line-inner">preparar a sua igreja para o ministério</span>
               </span>
               <span
                 className="hero-anim-line"
@@ -79,9 +73,8 @@ export function Hero() {
               className="hero-anim mt-6 max-w-130 text-[15px] leading-relaxed text-ink-soft"
               style={{ "--hero-delay": "420ms" } as CSSProperties}
             >
-              A Mispá Treinamentos reúne cursos, materiais e treinamentos de
-              professores que estudam e ensinam com seriedade. Conhecimento
-              profundo, apresentado como uma experiência de estudo honesta.
+              Se você busca aperfeicoamento ministerial e crescimento da sua comunidade está no lugar certo.
+              A Mispá treinamentos reúne o que há de melhor no universo da teologia reformada, e abraça a efervescência de uma perspectiva continuísta para preparar treinamentos e mentorias que atendam as demandas da sua igreja. Tudo isso com valores acessíveis a todas as realidades.
             </p>
 
             <div
@@ -104,21 +97,6 @@ export function Hero() {
               </a>
             </div>
 
-            <div
-              className="hero-anim mt-14 grid max-w-130 grid-cols-3 divide-x divide-line border-t border-line pt-7"
-              style={{ "--hero-delay": "660ms" } as CSSProperties}
-            >
-              {stats.map((stat) => (
-                <div key={stat.label} className="px-4 first:pl-0">
-                  <strong className="font-display text-2xl font-extrabold tracking-tight text-ink">
-                    {stat.value}
-                  </strong>
-                  <p className="mt-1 text-xs leading-tight text-ink-soft">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Capas do acervo */}
