@@ -1,24 +1,35 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   BarChart3,
   BookOpen,
-  Lock,
   Pencil,
   Plus,
-  RotateCcw,
   Trash2,
+  Upload,
   Users,
   X,
 } from "lucide-react";
-import { ADMIN_PASSWORD } from "@/lib/site";
-import { useLeads, useMentorias } from "@/lib/store";
-import type { Mentoria } from "@/lib/mentorias";
+import {
+  createMentoriaAction,
+  deleteMentoriaAction,
+  getMentoriasAdmin,
+  togglePublishedAction,
+  updateMentoriaAction,
+  logoutAction,
+} from "@/app/actions/mentorias";
+import { listLeadsAction, clearLeadsAction } from "@/app/actions/leads";
+import { createClient } from "@/lib/supabase/client";
 
-type Tab = "resumo" | "mentorias" | "leads";
+type Lead = {
+  id: string;
+  mentoria_title: string;
+  origem: string;
+  created_at: string;
+};
 
 const origemLabels: Record<string, string> = {
   modal: "Detalhe da mentoria",
@@ -26,16 +37,7 @@ const origemLabels: Record<string, string> = {
   "como-funciona": "Seção como funciona",
 };
 
-function isAuthed() {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.sessionStorage.getItem("kerygma-admin") === "1";
-  } catch {
-    return false;
-  }
-}
-
-function formatDate(iso: string) {
+function formatLeadDate(iso: string) {
   try {
     return new Date(iso).toLocaleString("pt-BR", {
       day: "2-digit",
@@ -48,9 +50,32 @@ function formatDate(iso: string) {
   }
 }
 
-/* ---------------- Formulário de mentoria ---------------- */
+type MentoriaRow = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  level: string;
+  description: string;
+  long: string;
+  topics: string[];
+  encontros: string;
+  duracao: string;
+  formato: string;
+  para_quem: string;
+  image_url: string | null;
+  image_alt: string | null;
+  accent: string;
+  published: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type Tab = "resumo" | "mentorias" | "leads";
 
 const emptyForm = {
+  slug: "",
   title: "",
   category: "",
   level: "Iniciante",
@@ -60,24 +85,41 @@ const emptyForm = {
   encontros: "",
   duracao: "",
   formato: "Ao vivo, individual ou em grupo",
-  paraQuem: "",
-  imageUrl: "",
+  para_quem: "",
+  image_url: "",
+  image_alt: "",
   accent: "#b91c2b",
+  published: false,
+  sort_order: 0,
 };
+
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function slugify(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 function MentoriaForm({
   initial,
+  takenSlugs,
   onSave,
   onCancel,
 }: {
-  initial?: Mentoria;
-  onSave: (data: Omit<Mentoria, "slug" | "cover">) => void;
+  initial?: MentoriaRow;
+  takenSlugs: string[];
+  onSave: (formData: FormData) => Promise<{ error?: string; success?: boolean }>;
   onCancel: () => void;
 }) {
   const [form, setForm] = useState({
     ...emptyForm,
     ...(initial
       ? {
+          slug: initial.slug,
           title: initial.title,
           category: initial.category,
           level: initial.level,
@@ -87,16 +129,68 @@ function MentoriaForm({
           encontros: initial.encontros,
           duracao: initial.duracao,
           formato: initial.formato,
-          paraQuem: initial.paraQuem,
-          imageUrl: initial.imageUrl ?? "",
+          para_quem: initial.para_quem,
+          image_url: initial.image_url ?? "",
+          image_alt: initial.image_alt ?? "",
           accent: initial.accent,
+          published: initial.published,
+          sort_order: initial.sort_order,
         }
       : {}),
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(Boolean(initial));
 
-  const set = (key: keyof typeof emptyForm) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  async function handleUpload(file: File) {
+    if (!file.type.startsWith("image/")) {
+      setError("Selecione um arquivo de imagem.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError("A imagem deve ter no máximo 2 MB.");
+      return;
+    }
+    setUploading(true);
+    setError(null);
+    try {
+      const supabase = createClient();
+      const ext = file.name.split(".").pop() ?? "png";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("mentoria-images")
+        .upload(path, file, { contentType: file.type });
+      if (upErr) throw new Error("Falha no upload da imagem.");
+      const { data } = supabase.storage.from("mentoria-images").getPublicUrl(path);
+      setForm((f) => ({ ...f, image_url: data.publicUrl }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao enviar imagem.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const set =
+    (key: keyof typeof emptyForm) =>
+    (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    ) =>
+      setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const title = e.target.value;
+    setForm((f) => ({
+      ...f,
+      title,
+      ...(slugTouched ? {} : { slug: slugify(title) }),
+    }));
+  }
+
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSlugTouched(true);
+    setForm((f) => ({ ...f, slug: e.target.value }));
+  }
 
   const input =
     "w-full rounded-md border border-line-strong bg-bg px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-brand";
@@ -104,7 +198,36 @@ function MentoriaForm({
     "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.16em] text-ink-soft";
 
   const valid =
-    form.title.trim() && form.description.trim() && form.topics.trim();
+    form.title.trim() && form.description.trim() && form.topics.trim() && form.slug.trim();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!valid) return;
+    const slug = form.slug.trim();
+    if (!SLUG_PATTERN.test(slug)) {
+      setError(
+        "Slug inválido: use apenas letras minúsculas, números e hífens (ex.: pregacao-expositiva).",
+      );
+      return;
+    }
+    if (takenSlugs.includes(slug)) {
+      setError(
+        "Já existe uma mentoria com este endereço (slug). Escolha outro — ele é usado no link do treinamento.",
+      );
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    const fd = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      fd.append(key, String(value));
+    });
+    const result = await onSave(fd);
+    setSaving(false);
+    if (result?.error) {
+      setError(result.error);
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-6">
@@ -136,178 +259,204 @@ function MentoriaForm({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label className={label}>Nome da mentoria *</label>
-            <input value={form.title} onChange={set("title")} placeholder="Ex: Pregação Expositiva" className={input} />
-          </div>
-          <div>
-            <label className={label}>Categoria</label>
-            <input value={form.category} onChange={set("category")} placeholder="Ex: Homilética" className={input} />
-          </div>
-          <div>
-            <label className={label}>Nível</label>
-            <select value={form.level} onChange={set("level")} className={input}>
-              <option>Iniciante</option>
-              <option>Intermediário</option>
-              <option>Avançado</option>
-              <option>Todos os níveis</option>
-            </select>
-          </div>
-          <div className="sm:col-span-2">
-            <label className={label}>Descrição curta (card) *</label>
-            <textarea value={form.description} onChange={set("description")} rows={2} placeholder="Uma frase que resume a mentoria..." className={input} />
-          </div>
-          <div className="sm:col-span-2">
-            <label className={label}>Sobre (dentro do detalhe)</label>
-            <textarea value={form.long} onChange={set("long")} rows={3} placeholder="Explique com mais profundidade..." className={input} />
-          </div>
-          <div className="sm:col-span-2">
-            <label className={label}>O que vai abordar — um por linha *</label>
-            <textarea value={form.topics} onChange={set("topics")} rows={5} placeholder={"Ex:\nQuem é Deus\nA Escritura\nSalvação"} className={input} />
-          </div>
-          <div>
-            <label className={label}>Encontros</label>
-            <input value={form.encontros} onChange={set("encontros")} placeholder="Ex: 6 encontros" className={input} />
-          </div>
-          <div>
-            <label className={label}>Duração</label>
-            <input value={form.duracao} onChange={set("duracao")} placeholder="Ex: 1h por encontro" className={input} />
-          </div>
-          <div>
-            <label className={label}>Formato</label>
-            <input value={form.formato} onChange={set("formato")} className={input} />
-          </div>
-          <div>
-            <label className={label}>Para quem</label>
-            <input value={form.paraQuem} onChange={set("paraQuem")} placeholder="Ex: Líderes e pregadores" className={input} />
-          </div>
-          <div>
-            <label className={label}>Foto (opcional)</label>
-            <input value={form.imageUrl} onChange={set("imageUrl")} placeholder="/img/nome.png ou https://..." className={input} />
-          </div>
-          <div>
-            <label className={label}>Cor de destaque</label>
-            <div className="flex items-center gap-3">
-              <input type="color" value={form.accent} onChange={set("accent")} className="h-10 w-14 cursor-pointer rounded-md border border-line-strong bg-bg" />
-              <span className="text-xs text-ink-faint">{form.accent}</span>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className={label}>Slug (URL) *</label>
+              <input
+                value={form.slug}
+                onChange={handleSlugChange}
+                placeholder="ex: preguacao-expositiva"
+                className={input}
+              />
+            </div>
+            <div>
+              <label className={label}>Nome da mentoria *</label>
+              <input value={form.title} onChange={handleTitleChange} placeholder="Ex: Pregação Expositiva" className={input} />
+            </div>
+            <div>
+              <label className={label}>Categoria</label>
+              <input value={form.category} onChange={set("category")} placeholder="Ex: Homilética" className={input} />
+            </div>
+            <div>
+              <label className={label}>Nível</label>
+              <select value={form.level} onChange={set("level")} className={input}>
+                <option>Iniciante</option>
+                <option>Intermediário</option>
+                <option>Avançado</option>
+                <option>Todos os níveis</option>
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label className={label}>Descrição curta (card) *</label>
+              <textarea value={form.description} onChange={set("description")} rows={2} placeholder="Uma frase que resume a mentoria..." className={input} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={label}>Sobre (dentro do detalhe)</label>
+              <textarea value={form.long} onChange={set("long")} rows={3} placeholder="Explique com mais profundidade..." className={input} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={label}>O que vai abordar — um por linha *</label>
+              <textarea
+                value={form.topics}
+                onChange={set("topics")}
+                rows={5}
+                placeholder={"Ex:\nQuem é Deus\nA Escritura\nSalvação"}
+                className={input}
+              />
+            </div>
+            <div>
+              <label className={label}>Encontros</label>
+              <input value={form.encontros} onChange={set("encontros")} placeholder="Ex: 6 encontros" className={input} />
+            </div>
+            <div>
+              <label className={label}>Duração</label>
+              <input value={form.duracao} onChange={set("duracao")} placeholder="Ex: 1h por encontro" className={input} />
+            </div>
+            <div>
+              <label className={label}>Formato</label>
+              <input value={form.formato} onChange={set("formato")} className={input} />
+            </div>
+            <div>
+              <label className={label}>Para quem</label>
+              <input value={form.para_quem} onChange={set("para_quem")} placeholder="Ex: Líderes e pregadores" className={input} />
+            </div>
+            <div>
+              <label className={label}>URL da imagem (opcional)</label>
+              <input value={form.image_url} onChange={set("image_url")} placeholder="/img/nome.png ou https://..." className={input} />
+              <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-md border border-line-strong px-3 py-2 text-xs font-bold text-ink-soft transition hover:border-brand hover:text-brand-hover">
+                <Upload size={14} />
+                {uploading ? "Enviando..." : "Ou envie uma imagem (2 MB máx.)"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleUpload(file);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            <div>
+              <label className={label}>Texto alternativo da imagem</label>
+              <input value={form.image_alt} onChange={set("image_alt")} placeholder="Descrição da imagem" className={input} />
+            </div>
+            <div>
+              <label className={label}>Ordem de exibição</label>
+              <input
+                type="number"
+                value={form.sort_order}
+                onChange={set("sort_order")}
+                className={input}
+              />
+            </div>
+            <div>
+              <label className={label}>Cor de destaque</label>
+              <div className="flex items-center gap-3">
+                <input type="color" value={form.accent} onChange={set("accent")} className="h-10 w-14 cursor-pointer rounded-md border border-line-strong bg-bg" />
+                <span className="text-xs text-ink-faint">{form.accent}</span>
+              </div>
+            </div>
+            <div className="sm:col-span-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-ink-soft">
+                <input
+                  type="checkbox"
+                  checked={form.published}
+                  onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
+                  className="h-4 w-4 accent-brand"
+                />
+                Publicada (visível no site)
+              </label>
             </div>
           </div>
-        </div>
 
-        <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button type="button" onClick={onCancel} className="rounded-md border border-line-strong px-6 py-3 text-sm font-bold text-ink-soft transition hover:text-ink">
-            Cancelar
-          </button>
-          <button
-            type="button"
-            disabled={!valid}
-            onClick={() =>
-              onSave({
-                title: form.title.trim(),
-                category: form.category.trim() || "Mentoria",
-                level: form.level,
-                description: form.description.trim(),
-                long: form.long.trim() || form.description.trim(),
-                topics: form.topics.split("\n").map((t) => t.trim()).filter(Boolean),
-                encontros: form.encontros.trim() || "A combinar",
-                duracao: form.duracao.trim() || "A combinar",
-                formato: form.formato.trim() || "Ao vivo",
-                paraQuem: form.paraQuem.trim() || "Todos",
-                imageUrl: form.imageUrl.trim() || undefined,
-                accent: form.accent,
-              })
-            }
-            className="rounded-md bg-brand px-6 py-3 text-sm font-bold text-white transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {initial ? "Salvar mudanças" : "Publicar mentoria"}
-          </button>
-        </div>
+          {error && <p className="mt-4 text-[13px] font-semibold text-brand-hover">{error}</p>}
+
+          <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-md border border-line-strong px-6 py-3 text-sm font-bold text-ink-soft transition hover:text-ink"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={!valid || saving}
+              className="rounded-md bg-brand px-6 py-3 text-sm font-bold text-white transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {saving ? "Salvando..." : initial ? "Salvar mudanças" : "Publicar mentoria"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 }
 
-/* ---------------- Página ---------------- */
-
 export default function AdminPage() {
-  const [authed, setAuthed] = useState(isAuthed);
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
   const [tab, setTab] = useState<Tab>("resumo");
+  const [mentorias, setMentorias] = useState<MentoriaRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<Mentoria | undefined>(undefined);
+  const [editing, setEditing] = useState<MentoriaRow | undefined>(undefined);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [leads, setLeads] = useState<Lead[]>([]);
 
-  const { mentorias, add, update, remove, reset } = useMentorias();
-  const { leads, clear } = useLeads();
+  async function loadLeads() {
+    const res = await listLeadsAction();
+    if (res.data) setLeads(res.data);
+  }
 
-  const [now] = useState(() => Date.now());
+  useEffect(() => {
+    getMentoriasAdmin()
+      .then((res) => {
+        if (res.data) setMentorias(res.data);
+        else if (res.error) setActionError(res.error);
+      })
+      .finally(() => setLoading(false));
+    listLeadsAction().then((res) => {
+      if (res.data) setLeads(res.data);
+    });
+  }, []);
 
-  const stats = useMemo(() => {
-    const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
-    const week = leads.filter((l) => new Date(l.data).getTime() >= weekAgo).length;
-    const byMentoria = new Map<string, number>();
-    for (const l of leads) byMentoria.set(l.mentoria, (byMentoria.get(l.mentoria) ?? 0) + 1);
-    const top = [...byMentoria.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
-    return { total: leads.length, week, top };
-  }, [leads, now]);
+  async function handleLogout() {
+    await logoutAction();
+  }
 
-  if (!authed) {
-    return (
-      <div className="grid min-h-screen place-items-center bg-bg px-5">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (password === ADMIN_PASSWORD) {
-              try {
-                window.sessionStorage.setItem("kerygma-admin", "1");
-              } catch {
-                /* ignora */
-              }
-              setAuthed(true);
-            } else {
-              setError(true);
-            }
-          }}
-          className="w-full max-w-sm rounded-xl bg-card p-8 shadow-pop ring-1 ring-line"
-        >
-          <span className="grid h-12 w-12 place-items-center rounded-lg bg-brand-soft text-brand-hover">
-            <Lock size={20} />
-          </span>
-          <h1 className="mt-5 font-display text-xl font-extrabold tracking-tight text-ink">
-            Área do professor
-          </h1>
-          <p className="mt-1.5 text-sm text-ink-soft">
-            Acesso restrito. Digite sua senha para gerenciar o site.
-          </p>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError(false);
-            }}
-            placeholder="Senha"
-            autoComplete="current-password"
-            className="mt-6 w-full rounded-md border border-line-strong bg-bg px-3.5 py-3 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-brand"
-          />
-          {error && (
-            <p className="mt-2.5 text-[13px] font-semibold text-brand-hover">
-              Senha incorreta. Tente de novo.
-            </p>
-          )}
-          <button
-            type="submit"
-            className="mt-4 w-full rounded-md bg-brand px-4 py-3 text-sm font-bold text-white transition hover:bg-brand-hover"
-          >
-            Entrar
-          </button>
-          <Link href="/" className="mt-4 flex items-center justify-center gap-1.5 text-[13px] font-semibold text-ink-faint transition hover:text-ink">
-            <ArrowLeft size={14} /> Voltar ao site
-          </Link>
-        </form>
-      </div>
-    );
+  async function handleDelete(id: string, title: string) {
+    if (!window.confirm(`Excluir "${title}" da vitrine?`)) return;
+    const result = await deleteMentoriaAction(id);
+    if (result?.success) {
+      setMentorias((prev) => prev.filter((m) => m.id !== id));
+    } else {
+      setActionError(result?.error ?? "Erro ao excluir.");
+    }
+  }
+
+  async function handleTogglePublished(id: string, published: boolean) {
+    const result = await togglePublishedAction(id, published);
+    if (result?.success) {
+      setMentorias((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, published } : m)),
+      );
+    }
+  }
+
+  async function handleSave(formData: FormData) {
+    const result = editing
+      ? await updateMentoriaAction(editing.id, formData)
+      : await createMentoriaAction(formData);
+    if (result?.success) {
+      setFormOpen(false);
+      setEditing(undefined);
+      const res = await getMentoriasAdmin();
+      if (res.data) setMentorias(res.data);
+    }
+    return result;
   }
 
   const tabs: { id: Tab; label: string; icon: typeof Users }[] = [
@@ -316,38 +465,36 @@ export default function AdminPage() {
     { id: "leads", label: "Interessados", icon: Users },
   ];
 
+  function selectTab(id: Tab) {
+    setTab(id);
+    if (id === "leads") void loadLeads();
+  }
+
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
       <header className="border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-          <div className="flex items-center gap-2.5">
-            <span className="grid h-8 w-8 place-items-center rounded-sm bg-brand font-display text-lg font-extrabold leading-none text-white">
-              k
-            </span>
+          <div className="flex items-center gap-3">
+            <img src="/img/logo_vetorizado.svg" alt="Mispá Treinamentos" className="h-9 w-auto block" />
             <div className="leading-none">
               <p className="font-display text-[15px] font-extrabold tracking-tight">
                 Painel do professor
               </p>
               <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ink-faint">
-                Kerygma Academy
+                Mispá Treinamentos
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" className="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3.5 py-2 text-[13px] font-bold text-ink-soft transition hover:text-ink">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3.5 py-2 text-[13px] font-bold text-ink-soft transition hover:text-ink"
+            >
               <ArrowLeft size={14} /> Ver site
             </Link>
             <button
               type="button"
-              onClick={() => {
-                try {
-                  window.sessionStorage.removeItem("kerygma-admin");
-                } catch {
-                  /* ignora */
-                }
-                setAuthed(false);
-                setPassword("");
-              }}
+              onClick={handleLogout}
               className="rounded-md px-3.5 py-2 text-[13px] font-bold text-ink-faint transition hover:text-brand-hover"
             >
               Sair
@@ -359,117 +506,124 @@ export default function AdminPage() {
             <button
               key={id}
               type="button"
-              onClick={() => setTab(id)}
+              onClick={() => selectTab(id)}
               className={`inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-[13px] font-bold transition ${
-                tab === id ? "bg-brand text-white" : "text-ink-soft hover:bg-elevated hover:text-ink"
+                tab === id
+                  ? "bg-brand text-white"
+                  : "text-ink-soft hover:bg-elevated hover:text-ink"
               }`}
             >
               <Icon size={15} />
               {label}
-              {id === "leads" && leads.length > 0 && (
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-extrabold ${tab === id ? "bg-white/20 text-white" : "bg-brand-soft text-brand-hover"}`}>
-                  {leads.length}
-                </span>
-              )}
             </button>
           ))}
         </nav>
       </header>
 
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8">
-        {tab === "resumo" && (
-          <div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {[
-                { label: "Mentorias publicadas", value: String(mentorias.length) },
-                { label: "Interessados (total)", value: String(stats.total) },
-                { label: "Interessados (7 dias)", value: String(stats.week) },
-              ].map((s) => (
-                <div key={s.label} className="rounded-xl bg-card p-6 shadow-card ring-1 ring-line">
-                  <p className="font-display text-3xl font-extrabold tracking-tight">{s.value}</p>
-                  <p className="mt-1 text-[13px] font-semibold text-ink-soft">{s.label}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-xl bg-card p-6 shadow-card ring-1 ring-line">
-              <h2 className="font-display text-base font-bold tracking-tight">
-                Mentorias mais procuradas
-              </h2>
-              {stats.top.length === 0 ? (
-                <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                  Ninguém clicou no WhatsApp ainda. Quando alguém demonstrar
-                  interesse pelo site, aparece aqui.
-                </p>
-              ) : (
-                <ul className="mt-4 space-y-3">
-                  {stats.top.map(([name, count]) => (
-                    <li key={name}>
-                      <div className="flex items-center justify-between gap-3 text-sm">
-                        <span className="font-semibold">{name}</span>
-                        <span className="font-bold text-brand-hover">{count}x</span>
-                      </div>
-                      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-elevated">
-                        <div
-                          className="h-full rounded-full bg-brand"
-                          style={{ width: `${Math.min(100, (count / Math.max(1, stats.total)) * 100)}%` }}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+        {actionError && (
+          <div className="mb-6 rounded-lg border border-brand/30 bg-brand-soft/30 px-4 py-3 text-sm font-semibold text-brand-hover">
+            {actionError}
           </div>
         )}
 
-        {tab === "mentorias" && (
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <p className="text-sm text-ink-soft">Carregando mentorias...</p>
+          </div>
+        ) : tab === "resumo" ? (
+          <div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="rounded-xl bg-card p-6 shadow-card ring-1 ring-line">
+                <p className="font-display text-3xl font-extrabold tracking-tight">
+                  {mentorias.length}
+                </p>
+                <p className="mt-1 text-[13px] font-semibold text-ink-soft">
+                  Total de mentorias
+                </p>
+              </div>
+              <div className="rounded-xl bg-card p-6 shadow-card ring-1 ring-line">
+                <p className="font-display text-3xl font-extrabold tracking-tight">
+                  {mentorias.filter((m) => m.published).length}
+                </p>
+                <p className="mt-1 text-[13px] font-semibold text-ink-soft">
+                  Publicadas
+                </p>
+              </div>
+              <div className="rounded-xl bg-card p-6 shadow-card ring-1 ring-line">
+                <p className="font-display text-3xl font-extrabold tracking-tight">
+                  {leads.length}
+                </p>
+                <p className="mt-1 text-[13px] font-semibold text-ink-soft">
+                  Interessados
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : tab === "mentorias" ? (
           <div>
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-ink-soft">
                 Tudo que você mudar aqui aparece na hora na vitrine do site.
               </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (window.confirm("Voltar para as 6 mentorias originais? Suas mudanças serão perdidas.")) reset();
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-4 py-2.5 text-[13px] font-bold text-ink-soft transition hover:text-ink"
-                >
-                  <RotateCcw size={14} /> Restaurar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditing(undefined);
-                    setFormOpen(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2.5 text-[13px] font-bold text-white transition hover:bg-brand-hover"
-                >
-                  <Plus size={15} /> Nova mentoria
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditing(undefined);
+                  setFormOpen(true);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2.5 text-[13px] font-bold text-white transition hover:bg-brand-hover"
+              >
+                <Plus size={15} /> Nova mentoria
+              </button>
             </div>
 
             {mentorias.length === 0 ? (
               <div className="rounded-xl border border-dashed border-line-strong py-20 text-center">
-                <p className="font-display text-lg font-bold">Nenhuma mentoria publicada</p>
-                <p className="mt-1 text-sm text-ink-soft">A vitrine do site está vazia. Crie a primeira.</p>
+                <p className="font-display text-lg font-bold">Nenhuma mentoria cadastrada</p>
+                <p className="mt-1 text-sm text-ink-soft">Crie a primeira.</p>
               </div>
             ) : (
               <ul className="space-y-3">
                 {mentorias.map((m) => (
-                  <li key={m.slug} className="flex items-center gap-4 rounded-xl bg-card p-4 shadow-card ring-1 ring-line sm:p-5">
-                    <span className="hidden h-12 w-12 shrink-0 place-items-center rounded-lg font-display text-lg font-extrabold text-white sm:grid" style={{ backgroundColor: m.accent }}>
+                  <li
+                    key={m.id}
+                    className="flex items-center gap-4 rounded-xl bg-card p-4 shadow-card ring-1 ring-line sm:p-5"
+                  >
+                    <span
+                      className="hidden h-12 w-12 shrink-0 place-items-center rounded-lg font-display text-lg font-extrabold text-white sm:grid"
+                      style={{ backgroundColor: m.accent }}
+                    >
                       {m.title.charAt(0).toUpperCase()}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-display text-[15px] font-bold tracking-tight">{m.title}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="truncate font-display text-[15px] font-bold tracking-tight">
+                          {m.title}
+                        </p>
+                        <span
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                            m.published
+                              ? "bg-green-900/30 text-green-400"
+                              : "bg-gray-800 text-gray-400"
+                          }`}
+                        >
+                          {m.published ? "Publicada" : "Rascunho"}
+                        </span>
+                      </div>
                       <p className="mt-0.5 truncate text-[13px] text-ink-soft">
                         {m.category} · {m.encontros} · {m.topics.length} tópicos
                       </p>
                     </div>
+                    <label className="flex shrink-0 items-center gap-2 text-xs font-semibold text-ink-soft">
+                      <input
+                        type="checkbox"
+                        checked={m.published}
+                        onChange={(e) => handleTogglePublished(m.id, e.target.checked)}
+                        className="h-4 w-4 accent-brand"
+                      />
+                      Publicada
+                    </label>
                     <button
                       type="button"
                       aria-label={`Editar ${m.title}`}
@@ -484,9 +638,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       aria-label={`Excluir ${m.title}`}
-                      onClick={() => {
-                        if (window.confirm(`Excluir "${m.title}" da vitrine?`)) remove(m.slug);
-                      }}
+                      onClick={() => handleDelete(m.id, m.title)}
                       className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-line-strong text-ink-soft transition hover:border-brand hover:text-brand-hover"
                     >
                       <Trash2 size={15} />
@@ -496,9 +648,7 @@ export default function AdminPage() {
               </ul>
             )}
           </div>
-        )}
-
-        {tab === "leads" && (
+        ) : tab === "leads" ? (
           <div>
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-ink-soft">
@@ -507,8 +657,11 @@ export default function AdminPage() {
               {leads.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (window.confirm("Apagar toda a lista de interessados?")) clear();
+                  onClick={async () => {
+                    if (!window.confirm("Apagar toda a lista de interessados?")) return;
+                    const res = await clearLeadsAction();
+                    if (res?.success) setLeads([]);
+                    else setActionError(res?.error ?? "Erro ao limpar.");
                   }}
                   className="inline-flex items-center gap-1.5 self-start rounded-md border border-line-strong px-4 py-2.5 text-[13px] font-bold text-ink-soft transition hover:text-brand-hover"
                 >
@@ -520,41 +673,45 @@ export default function AdminPage() {
             {leads.length === 0 ? (
               <div className="rounded-xl border border-dashed border-line-strong py-20 text-center">
                 <p className="font-display text-lg font-bold">Nenhum interessado ainda</p>
-                <p className="mt-1 text-sm text-ink-soft">Os cliques no WhatsApp aparecem aqui automaticamente.</p>
+                <p className="mt-1 text-sm text-ink-soft">
+                  Os cliques no WhatsApp aparecem aqui automaticamente.
+                </p>
               </div>
             ) : (
               <ul className="space-y-2.5">
                 {leads.map((lead) => (
-                  <li key={lead.id} className="flex flex-col gap-1 rounded-xl bg-card px-5 py-4 shadow-card ring-1 ring-line sm:flex-row sm:items-center sm:justify-between">
+                  <li
+                    key={lead.id}
+                    className="flex flex-col gap-1 rounded-xl bg-card px-5 py-4 shadow-card ring-1 ring-line sm:flex-row sm:items-center sm:justify-between"
+                  >
                     <div>
-                      <p className="text-sm font-bold">{lead.mentoria}</p>
+                      <p className="text-sm font-bold">{lead.mentoria_title}</p>
                       <p className="mt-0.5 text-[13px] text-ink-soft">
                         {origemLabels[lead.origem] ?? lead.origem}
                       </p>
                     </div>
-                    <p className="text-[13px] font-semibold text-ink-faint">{formatDate(lead.data)}</p>
+                    <p className="text-[13px] font-semibold text-ink-faint">
+                      {formatLeadDate(lead.created_at)}
+                    </p>
                   </li>
                 ))}
               </ul>
             )}
           </div>
-        )}
+        ) : null}
       </main>
 
       {formOpen && (
         <MentoriaForm
           initial={editing}
+          takenSlugs={mentorias
+            .filter((m) => m.id !== editing?.id)
+            .map((m) => m.slug)}
           onCancel={() => {
             setFormOpen(false);
             setEditing(undefined);
           }}
-          onSave={(data) => {
-            if (editing) update(editing.slug, data);
-            else add(data);
-            setFormOpen(false);
-            setEditing(undefined);
-            setTab("mentorias");
-          }}
+          onSave={handleSave}
         />
       )}
     </div>

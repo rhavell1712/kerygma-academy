@@ -2,9 +2,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Cover } from "@/components/shared/cover";
-import { Parallax } from "@/components/animations/parallax";
 import { featuredItems } from "@/lib/data";
-import { HeroScroll } from "./hero-scroll";
 
 const stats = [
   { value: "40+", label: "conteúdos disponíveis" },
@@ -15,18 +13,15 @@ const stats = [
 export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-line">
-      <Parallax
-        speed={0.1}
-        className="pointer-events-none absolute -inset-10"
-      >
-        <div aria-hidden="true" className="hero-grid absolute inset-0" />
-      </Parallax>
+      <div aria-hidden="true" className="pointer-events-none absolute -inset-10">
+        <div className="hero-grid absolute inset-0" />
+      </div>
       <div
         aria-hidden="true"
         className="animate-drift pointer-events-none absolute -left-32 top-1/4 h-72 w-72 rounded-full bg-brand/[0.07] blur-[120px]"
       />
 
-      <HeroScroll>
+      <div>
         <div className="relative mx-auto grid max-w-310 items-center gap-10 px-5 pb-10 pt-24 sm:px-8 md:px-10 lg:min-h-[90vh] lg:gap-16 lg:pb-16 lg:pt-28 lg:grid-cols-[1fr_0.9fr]">
           <div>
             <p
@@ -64,7 +59,7 @@ export function Hero() {
               className="hero-anim mt-6 max-w-130 text-[15px] leading-relaxed text-ink-soft"
               style={{ "--hero-delay": "420ms" } as CSSProperties}
             >
-              A Kerygma Academy reúne cursos, materiais e mentorias de
+              A Mispá Treinamentos reúne cursos, materiais e treinamentos de
               professores que estudam e ensinam com seriedade. Conhecimento
               profundo, apresentado como uma experiência de estudo honesta.
             </p>
@@ -74,10 +69,10 @@ export function Hero() {
               style={{ "--hero-delay": "520ms" } as CSSProperties}
             >
               <Link
-                href="#mentorias"
+                href="#treinamentos"
                 className="group inline-flex items-center justify-center gap-2 rounded-sm bg-brand px-7 py-3.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-hover hover:scale-[1.03] active:scale-[0.98]"
               >
-                Ver mentorias
+                Ver treinamentos
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </Link>
 
@@ -107,8 +102,7 @@ export function Hero() {
           </div>
 
           {/* Capas do acervo */}
-          <Parallax
-            speed={0.06}
+          <div
             className="relative mx-auto h-84 w-full max-w-105 sm:h-96 sm:max-w-115 lg:mx-0 lg:h-140 lg:w-full lg:max-w-120 lg:justify-self-center"
           >
             <div
@@ -145,9 +139,9 @@ export function Hero() {
                 />
               )}
             </div>
-          </Parallax>
+          </div>
         </div>
-      </HeroScroll>
+      </div>
     </section>
   );
 }

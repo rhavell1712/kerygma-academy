@@ -5,14 +5,14 @@ import { Reveal } from "@/components/animations/reveal";
 import { TextReveal } from "@/components/animations/text-reveal";
 import { Stagger } from "@/components/animations/stagger";
 import { waLink } from "@/lib/site";
-import { trackLead } from "@/lib/store";
+import { trackLead } from "@/lib/track-lead";
 
 const steps = [
   {
     icon: MousePointerClick,
     number: "01",
-    title: "Escolha sua mentoria",
-    text: "Veja a vitrine acima e toque em ver detalhes para conhecer o conteúdo de cada mentoria.",
+    title: "Escolha seu treinamento",
+    text: "Veja a vitrine acima e toque em ver detalhes para conhecer o conteúdo de cada treinamento.",
   },
   {
     icon: MessageCircle,
@@ -47,7 +47,7 @@ export function ComoFunciona() {
           </Reveal>
           <TextReveal delay={80}>
             <h2 className="mt-5 font-display text-3xl font-extrabold tracking-[-0.02em] text-ink sm:text-4xl">
-              Mentoria de verdade, do início ao fim
+              Treinamento de verdade, do início ao fim
             </h2>
           </TextReveal>
           <Reveal direction="up" delay={140}>
@@ -88,10 +88,10 @@ export function ComoFunciona() {
 
         <Reveal direction="up" delay={120} className="mt-10 text-center">
           <a
-            href={waLink("Olá! Quero entender como funciona a mentoria.")}
+            href={waLink("Olá! Quero entender como funciona o treinamento.")}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => trackLead("Todas as mentorias", "como-funciona")}
+            onClick={() => trackLead("Todos os treinamentos", "como-funciona")}
             className="inline-flex items-center gap-2.5 rounded-sm bg-[#25d366] px-8 py-4 text-sm font-bold text-[#062b16] transition hover:brightness-110 hover:scale-[1.02] active:scale-[0.99]"
           >
             <MessageCircle size={17} />

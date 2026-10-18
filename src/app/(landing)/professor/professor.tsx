@@ -1,13 +1,7 @@
 import Image from "next/image";
 import { Reveal } from "@/components/animations/reveal";
 import { TextReveal } from "@/components/animations/text-reveal";
-import { Stagger } from "@/components/animations/stagger";
 
-const stats = [
-  { value: "12+", label: "anos ensinando" },
-  { value: "18", label: "cursos publicados" },
-  { value: "4,9", label: "avaliação dos alunos" },
-];
 
 export function Professor() {
   return (
@@ -24,8 +18,8 @@ export function Professor() {
             className="group absolute inset-0 overflow-hidden rounded-sm bg-[linear-gradient(145deg,#191019,#3a0d14)] shadow-pop ring-1 ring-line-strong"
           >
             <Image
-              src="/img/professor.png"
-              alt="Prof. Ricardo Nunes"
+              src="/img/professor1.png"
+              alt="Prof. Antonio Lacerda"
               fill
               sizes="(max-width: 1024px) 90vw, 400px"
               quality={90}
@@ -36,7 +30,7 @@ export function Professor() {
               className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
             />
             <p className="absolute bottom-5 left-5 font-display text-sm font-bold text-white/90 transition-transform duration-700 group-hover:-translate-y-0.5">
-              Prof. Ricardo Nunes
+              Prof. Antonio Lacerda
             </p>
           </Reveal>
         </div>
@@ -56,11 +50,9 @@ export function Professor() {
 
           <Reveal direction="up" delay={140}>
             <p className="mt-6 max-w-140 text-[15px] leading-relaxed text-ink-soft">
-              Ricardo Nunes é professor e pesquisador de Novo Testamento,
-              com mais de uma década dedicada à formação cristã. Seus cursos
-              e materiais procuram aproximar o rigor da pesquisa com a vida
-              concreta da fé — leitura atenta do texto, contexto histórico e
-              aplicação honesta.
+              Antonio Lacerda, esposo da Thalita, pai do Levi e da sara, estudante de Teologia e História, atualmente segundo pastor e vice presidente da Igreja Evangélica Missão Paraju em Domingos Martins ES.
+              Atua junto ao presbitério da Igreja e é responsável pela produção de todo material teológico da igreja. Autor do livro: &ldquo;Nas trincheiras do bom Cambate&rdquo; e autor de varios textos como &ldquo;Na praça&rdquo; publicado pelo centro de estudos Bíblicos, (CEBI). Tem atuado como mestre na comunidade e produzido material de treinamentos para ajudar  o desenvolvimento de várias igrejas independentes  em crescimento.
+              Atuou como missionário por mais de duas decadas e ainda mantém vínculos com o campo missionário.
             </p>
           </Reveal>
 
@@ -71,28 +63,10 @@ export function Professor() {
                 fazer perguntas melhores.&rdquo;
               </p>
               <footer className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-ink-faint">
-                Prof. Ricardo Nunes
+                Prof. Antonio Lacerda
               </footer>
             </blockquote>
           </Reveal>
-
-          <Stagger
-            direction="up"
-            delay={120}
-            step={110}
-            className="mt-12 grid max-w-140 grid-cols-3 divide-x divide-line border-t border-line pt-7"
-          >
-            {stats.map((stat) => (
-              <div key={stat.label} className="px-4 first:pl-0">
-                <strong className="font-display text-2xl font-extrabold tracking-tight text-ink">
-                  {stat.value}
-                </strong>
-                <p className="mt-1 text-xs leading-tight text-ink-soft">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </Stagger>
         </div>
       </div>
     </section>

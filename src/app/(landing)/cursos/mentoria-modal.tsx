@@ -6,7 +6,7 @@ import { X, Check, CalendarRange, Clock, Video, UserRound, MessageCircle } from 
 import { Cover } from "@/components/shared/cover";
 import type { Mentoria } from "@/lib/mentorias";
 import { waLink } from "@/lib/site";
-import { trackLead } from "@/lib/store";
+import { trackLead } from "@/lib/track-lead";
 
 type Props = {
   mentoria: Mentoria | null;
@@ -30,7 +30,7 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
 
   if (!mentoria) return null;
 
-  const waMessage = `Olá! Quero saber mais sobre a mentoria "${mentoria.title}".`;
+  const waMessage = `Olá! Quero saber mais sobre o treinamento "${mentoria.title}".`;
 
   const info = [
     { icon: CalendarRange, label: "Encontros", value: mentoria.encontros },
@@ -53,15 +53,17 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
         className="absolute inset-0 cursor-default bg-black/70 backdrop-blur-sm"
       />
 
-      <div className="animate-fade-up relative max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl bg-card shadow-pop ring-1 ring-line-strong sm:rounded-2xl">
-        <div className="relative h-44 overflow-hidden sm:h-56">
+      <div
+        className="animate-fade-up relative max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl bg-card shadow-pop ring-1 ring-line-strong sm:rounded-2xl sm:mx-4 md:mx-0"
+      >
+        <div className="relative h-48 sm:h-64 overflow-hidden">
           {mentoria.imageUrl ? (
             <Image
               src={mentoria.imageUrl}
               alt={mentoria.title}
               fill
               sizes="(max-width: 640px) 100vw, 672px"
-              className="object-cover"
+              className="object-cover transition duration-500"
             />
           ) : (
             <Cover
@@ -82,7 +84,7 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
           )}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent"
+            className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent/60"
           />
           <button
             type="button"
@@ -93,16 +95,16 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
             <X size={17} />
           </button>
           <div className="absolute bottom-4 left-5 right-5">
-            <span className="inline-flex items-center rounded-sm bg-brand px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white">
-              Mentoria · {mentoria.level}
+            <span className="inline-flex items-center rounded-sm bg-brand-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0b2510]">
+              Treinamento · {mentoria.level}
             </span>
-            <h3 className="mt-2.5 font-display text-2xl font-extrabold tracking-tight text-white drop-shadow-md">
+            <h3 className="mt-2.5 font-display text-2xl font-extrabold tracking-tight text-ink">
               {mentoria.title}
             </h3>
           </div>
         </div>
 
-        <div className="px-5 py-6 sm:px-7">
+        <div className="px-5 py-6 sm:px-7 sm:pb-8">
           <p className="text-[15px] leading-relaxed text-ink-soft">
             {mentoria.long}
           </p>
@@ -111,9 +113,9 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
             O que vamos abordar
           </h4>
           <ul className="mt-3.5 space-y-2.5">
-            {mentoria.topics.map((topic) => (
-              <li key={topic} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink/90">
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-soft text-brand-hover">
+            {mentoria.topics.map((topic, index) => (
+              <li key={`${index}-${topic}`} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink/90">
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-soft text-brand-accent">
                   <Check size={12} strokeWidth={3} />
                 </span>
                 {topic}
@@ -130,7 +132,7 @@ export function MentoriaModal({ mentoria, onClose }: Props) {
                 key={label}
                 className="flex items-start gap-3 rounded-lg border border-line bg-elevated/60 px-4 py-3.5"
               >
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-brand-soft text-brand-hover">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-brand-accent-soft text-brand-accent">
                   <Icon size={16} />
                 </span>
                 <span>

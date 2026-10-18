@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -18,9 +17,9 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Kerygma Academy — Conhecimento teológico em profundidade",
+  title: "Mispá Treinamentos — Conhecimento teológico em profundidade",
   description:
-    "Cursos, PDFs, livros e mentorias para estudar teologia com profundidade. Um acervo vivo para quem busca um entendimento sólido.",
+    "Cursos, PDFs, livros e treinamentos para estudar teologia com profundidade. Um acervo vivo para quem busca um entendimento sólido.",
 };
 
 const appearanceInitScript = `(function(){try{var t=localStorage.getItem('kerygma-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}var p=localStorage.getItem('kerygma-palette');if(p!=='marinho'&&p!=='dourado'&&p!=='ardosia'&&p!=='kerygma'){p='kerygma';}document.documentElement.dataset.theme=t;document.documentElement.dataset.palette=p;}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.palette='kerygma';}})();`;
@@ -38,10 +37,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${jakarta.variable}`}
     >
-      <body>{children}</body>
-      <Script id="appearance-init" strategy="beforeInteractive">
-        {appearanceInitScript}
-      </Script>
+      <body>
+        <script dangerouslySetInnerHTML={{ __html: appearanceInitScript }} />
+        {children}
+      </body>
     </html>
   );
 }

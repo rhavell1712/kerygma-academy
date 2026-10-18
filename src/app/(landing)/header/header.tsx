@@ -7,7 +7,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { PaletteMenu } from "./palette-menu";
 
 const links = [
-  { label: "Mentorias", href: "#mentorias" },
+  { label: "Treinamentos", href: "#treinamentos" },
   { label: "Como funciona", href: "#como-funciona" },
   { label: "O professor", href: "#professor" },
 ];
@@ -36,16 +36,14 @@ export function LandingHeader() {
           scrolled ? "h-14" : "h-16"
         }`}
       >
-        <Link href="/" className="group flex items-center gap-2.5">
-          <span className="grid h-8 w-8 place-items-center rounded-sm bg-brand font-display text-lg font-extrabold leading-none text-white transition group-hover:bg-brand-hover">
-            k
-          </span>
+        <Link href="/" className="group flex items-center gap-3">
+          <img src="/img/logo_vetorizado.svg" alt="Mispá Treinamentos" className="h-10 w-auto block" />
           <span className="flex flex-col leading-none">
             <span className="font-display text-[15px] font-extrabold tracking-tight text-ink">
-              Kerygma
+              Mispá
             </span>
             <span className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-ink-faint">
-              Academy
+              Treinamentos
             </span>
           </span>
         </Link>
@@ -63,10 +61,10 @@ export function LandingHeader() {
         </nav>
 
         <Link
-          href="#mentorias"
+          href="#treinamentos"
           className="group hidden items-center gap-2 rounded-sm bg-ink px-4 py-2 text-[13px] font-bold text-bg transition hover:bg-brand-hover hover:text-white hover:scale-[1.03] active:scale-[0.98] sm:inline-flex"
         >
-          Ver mentorias
+          Ver treinamentos
           <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
         </Link>
 
@@ -97,11 +95,11 @@ export function LandingHeader() {
               </a>
             ))}
             <Link
-              href="#mentorias"
+              href="#treinamentos"
               onClick={() => setOpen(false)}
               className="mt-2 flex items-center justify-center gap-2 rounded-sm bg-brand px-4 py-3 text-sm font-bold text-white"
             >
-              Ver mentorias
+              Ver treinamentos
               <ArrowRight size={15} />
             </Link>
           </div>
