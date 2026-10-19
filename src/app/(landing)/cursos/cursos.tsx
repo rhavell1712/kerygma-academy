@@ -34,7 +34,7 @@ function MentoriaCard({
             src={mentoria.imageUrl}
             alt={mentoria.title}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 320px, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition duration-500 group-hover:scale-[1.07]"
           />
         ) : (
@@ -55,10 +55,10 @@ function MentoriaCard({
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"
         />
 
-        <span className="absolute left-4 top-4 inline-flex items-center rounded-sm bg-brand-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0b2510]">
+        <span className="absolute left-3 top-3 inline-flex items-center whitespace-nowrap rounded-sm bg-brand-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#0b2510] sm:left-4 sm:top-4 sm:py-1 sm:text-[10px] sm:tracking-[0.16em]">
           Treinamento
         </span>
-        <span className="absolute right-4 top-4 rounded-sm bg-black/55 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white/90 ring-1 ring-white/15 backdrop-blur">
+        <span className="absolute right-3 top-3 whitespace-nowrap rounded-sm bg-black/55 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white/90 ring-1 ring-white/15 backdrop-blur sm:right-4 sm:top-4 sm:text-[10px] sm:tracking-[0.14em]">
           {mentoria.level}
         </span>
 
@@ -145,9 +145,7 @@ export function Cursos({ mentorias }: { mentorias: Mentoria[] }) {
           </TextReveal>
           <Reveal direction="up" delay={140}>
             <p className="mt-5 text-[15px] leading-relaxed text-ink-soft">
-              Nada de curso gravado e solitário: encontros ao vivo, com
-              direção pessoal do professor. Toque em ver detalhes e chame
-              no WhatsApp para garantir sua vaga.
+              Sem aulas gravadas... Alguns cursos são presenciais com o professor indo até a sua igreja, e algumas modalidades são 100% online (plataforma de transmissão ao vivo). Toque em ver detalhes e chame no WhatsApp para agendar o seu treinamento.
             </p>
           </Reveal>
         </div>
@@ -175,7 +173,7 @@ export function Cursos({ mentorias }: { mentorias: Mentoria[] }) {
                     key={mentoria.slug}
                     mentoria={mentoria}
                     placeholderIndex={index + 1}
-                    className="snap-start shrink-0 w-[260px] sm:w-auto"
+                    className="snap-start shrink-0 w-[300px] max-w-[86vw] sm:w-auto sm:max-w-none"
                     onDetails={setSelected}
                   />
                 ))}
@@ -191,11 +189,10 @@ export function Cursos({ mentorias }: { mentorias: Mentoria[] }) {
                     onClick={() => goTo(index)}
                     aria-label={`Treino ${index + 1}`}
                     aria-current={carouselIndex === index ? "true" : undefined}
-                    className={`h-2 w-2 rounded-full transition-colors duration-300 ${
-                      carouselIndex === index
+                    className={`h-2 w-2 rounded-full transition-colors duration-300 ${carouselIndex === index
                         ? "bg-brand"
                         : "bg-ink-soft/40"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
