@@ -5,7 +5,6 @@ import Image from "next/image";
 import { ArrowRight, Video } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
 import { TextReveal } from "@/components/animations/text-reveal";
-import { Stagger } from "@/components/animations/stagger";
 import { Cover } from "@/components/shared/cover";
 import type { Mentoria } from "@/lib/mentorias";
 import { MentoriaModal } from "./mentoria-modal";
@@ -163,11 +162,7 @@ export function Cursos({ mentorias }: { mentorias: Mentoria[] }) {
               className="overflow-x-auto scroll-snap-x pb-4 no-scrollbar -mb-4 sm:overflow-x-visible sm:pb-0 sm:mb-0"
               style={{ scrollBehavior: "smooth" }}
             >
-              <Stagger
-                direction="up"
-                step={90}
-                className="flex gap-4 sm:grid sm:gap-x-5 sm:gap-y-8 min-[480px]:grid-cols-2 lg:grid-cols-3"
-              >
+              <div className="flex gap-4 sm:grid sm:gap-x-5 sm:gap-y-8 min-[480px]:grid-cols-2 lg:grid-cols-3">
                 {mentorias.map((mentoria, index) => (
                   <MentoriaCard
                     key={mentoria.slug}
@@ -177,7 +172,7 @@ export function Cursos({ mentorias }: { mentorias: Mentoria[] }) {
                     onDetails={setSelected}
                   />
                 ))}
-              </Stagger>
+              </div>
             </div>
 
             <div className="mt-6 flex flex-col items-center gap-2 sm:hidden">
