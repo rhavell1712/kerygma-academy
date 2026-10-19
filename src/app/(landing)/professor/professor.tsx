@@ -31,7 +31,7 @@ export function Professor() {
             className="group absolute inset-0 overflow-hidden rounded-sm bg-[linear-gradient(145deg,#191019,#3a0d14)] shadow-pop ring-1 ring-line-strong"
           >
             <Image
-              src="/img/professor1.png"
+              src="/img/professor.jpeg"
               alt="Prof. Antonio Lacerda"
               fill
               sizes="(max-width: 1024px) 90vw, 400px"
