@@ -31,7 +31,7 @@ export function Professor() {
             className="group absolute inset-0 overflow-hidden rounded-sm bg-[linear-gradient(145deg,#191019,#3a0d14)] shadow-pop ring-1 ring-line-strong"
           >
             <Image
-              src="/img/professor.jpeg"
+              src="/img/professor.png"
               alt="Prof. Antonio Lacerda"
               fill
               sizes="(max-width: 1024px) 90vw, 400px"
@@ -40,7 +40,7 @@ export function Professor() {
             />
             <div
               aria-hidden="true"
-              className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
+              className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"
             />
             <p className="absolute bottom-5 left-5 font-display text-sm font-bold text-white/90 transition-transform duration-700 group-hover:-translate-y-0.5">
               Prof. Antonio Lacerda

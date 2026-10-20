@@ -43,7 +43,7 @@ export function Hero() {
               style={{ "--hero-delay": "60ms" } as CSSProperties}
             >
               <span className="h-px w-8 bg-brand" />
-              Educação teológica em profundidade
+              Capacitação teológica em profundidade
             </p>
 
             <h1 className="mt-6 font-display text-[clamp(2rem,4.5vw,3.5rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-ink">
